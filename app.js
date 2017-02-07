@@ -53,7 +53,9 @@ var server = http.createServer(function (req, res) {
 var ios = require('socket.io')(server);
 console.log('port: ' + env.PORT);
 
-server.listen(env.OPENSHIFT_NODEJS_PORT || env.PORT || 3000, env.OPENSHIFT_NODEJS_IP || env.IP || 'localhost', function () {
+// For OpenShift the port/ip is env.OPENSHIFT_NODEJS_PORT and env.OPENSHIFT_NODEJS_IP
+
+server.listen( env.PORT || 3000,  env.IP || 'localhost', function () {
     // When a client connects
     ios.on('connection', function (socket) {
 

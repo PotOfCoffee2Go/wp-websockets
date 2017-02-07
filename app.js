@@ -5,12 +5,11 @@ const http         = require('http'),
       path         = require('path'),
       contentTypes = require('./utils/content-types'),
       sysInfo      = require('./utils/sys-info'),
-      uuid         = require('node-uuid'),
       env          = process.env;
 
 var version = JSON.parse(fs.readFileSync(path.join('', './package.json'))).version;
 
-/// ---------- API Server
+/// ---------- API HTTP Server
 var server = http.createServer(function (req, res) {
   var url = req.url;
   if (url == '/') {
@@ -119,7 +118,7 @@ server.listen( env.PORT || 3000,  env.IP || 'localhost', function () {
 
 
 /*
-/// ---------- API Server connection to websockets
+/// ---------- Server connection to websockets as a client
 var ioc = require('socket.io-client'),
 csocket = ioc.connect('http://localhost:3000', {reconnect: true});
 

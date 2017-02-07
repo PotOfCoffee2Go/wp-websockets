@@ -1,0 +1,11 @@
+sequenceDiagram
+
+%% Sequence diagram of message exchange between the Source Client, Server, and Other Clients
+%% Paste text of this file in 'Mermaid' online editor - http://knsv.github.io/mermaid/live_editor/
+
+Source Client->> UA Dynamic Server: connection
+UA Dynamic Server->> Source Client: Connected
+Source Client->> UA Dynamic Server: Join
+Source Client-->> Other Clients: Broadcast
+Source Client->> UA Dynamic Server: Leave
+Source Client->> UA Dynamic Server: disconnect

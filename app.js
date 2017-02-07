@@ -51,8 +51,9 @@ var server = http.createServer(function (req, res) {
 
 /// ---------- WebSocket Server
 var ios = require('socket.io')(server);
+console.log('port: ' + env.PORT);
 
-server.listen(env.OPENSHIFT_NODEJS_PORT || 3000, env.OPENSHIFT_NODEJS_IP || 'localhost', function () {
+server.listen(env.OPENSHIFT_NODEJS_PORT || env.PORT || 3000, env.OPENSHIFT_NODEJS_IP || env.IP || 'localhost', function () {
     // When a client connects
     ios.on('connection', function (socket) {
 

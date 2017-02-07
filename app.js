@@ -10,23 +10,25 @@ const http         = require('http'),
 var version = JSON.parse(fs.readFileSync(path.join('', './package.json'))).version;
 
 /// ---------- API HTTP Server
+/// Super simple web server
 var server = http.createServer(function (req, res) {
   var url = req.url;
   if (url == '/') {
     url += 'index.html';
   }
 
-  // Health monitoring
-
+  // Health monitoring - just returns a HTTP status of 200
   if (url == '/health') {
     res.writeHead(200);
     res.end();
   }
+  // Sends a JSON object with version - handy for testing
   else if (url.indexOf('/version/') == 0) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache, no-store');
     res.end(JSON.stringify( {version: version} ));
   }
+  // Return a web page from the 'static' directory
   else {
     fs.readFile('./static' + url, function (err, data) {
       if (err) {

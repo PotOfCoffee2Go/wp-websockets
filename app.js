@@ -5,9 +5,10 @@ const http         = require('http'),
       path         = require('path'),
       contentTypes = require('./utils/content-types'),
       sysInfo      = require('./utils/sys-info'),
-      env          = process.env;
-
-var version = JSON.parse(fs.readFileSync(path.join('', './package.json'))).version;
+      env          = process.env,
+      msg          = require('./js/messages.js');
+      
+var pkg = JSON.parse(fs.readFileSync(path.join('', './package.json')));
 
 /// ---------- API HTTP Server
 /// Super simple web server
@@ -26,7 +27,12 @@ var server = http.createServer(function (req, res) {
   else if (url.indexOf('/version/') == 0) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    res.end(JSON.stringify( {version: version} ));
+    res.end(JSON.stringify( {
+      "name": pkg.name,
+      "version": pkg.version,
+      "description": pkg.description,
+      "author": pkg.author
+    } ));
   }
   // Return a web page from the 'static' directory
   else {
@@ -60,60 +66,17 @@ server.listen( env.PORT || 3000,  env.IP || 'localhost', function () {
     // When a client connects
     ios.on('connection', function (socket) {
 
-        /// #### Events
-        socket.on('connected', onConnected);
+        /// #### Standard Events
+        socket.on('disconnect', function() {console.log('onDisconnect: ' + socket.id);});
+        socket.on('Join', function(message) {msg.onJoin(socket, message);});
+        socket.on('Leave', function(message) {msg.onLeave(socket, message);});
+        
+        /// #### Custom Events
+        socket.on('update bid', function(message) {msg.onUpdateBid(socket, message);});
 
-        socket.on('disconnect', onDisconnect);
+        // - Send a connected message to the client
+        msg.emitConnected(socket);
 
-        socket.on('update bid', onUpdateBid);
-
-        /// #### Connected message
-        /// - Upon connection send a connected message to the client
-        ///   - In the message will be a newClientId which the client
-        ///     uses in the response
-        ///   - If the client disconnects - when it reconnects it should
-        ///     ignore newClientID and use the same clientId that was given
-        ///     during the first connect
-        /// - Send ClientId to client
-        emitConnected();
-
-        function emitConnected() {
-            // Send connected - with a recommended session/client id
-            // When the client responds it can use these values or
-            //  previous values if reconnecting - see onConnected()
-            socket.emit('connected', {
-              data: {},
-              error: null
-            });
-        }
-
-        /// - Got Connected response from client
-        ///   - Activate client on the server
-        function onConnected(msg) {
-            if (msg.data && msg.data.room) {
-              socket.join(msg.data.room);
-              console.log("onConnected: joined room - " + JSON.stringify(msg));
-            }
-            else {
-              console.log('onConnected: ' + JSON.stringify(msg));
-            }
-        }
-
-        /// #### Disconnect message
-        /// - Tell server to deactivate client
-        function onDisconnect() {
-              console.log('onDisconnect: ' + socket.id);
-        }
-
-        /// - A bid has been updated
-        function onUpdateBid(msg) {
-          if (msg.data && msg.data.room) {
-            socket.broadcast.to(msg.data.room).emit('reload', msg);
-            console.log('onUpdateBid: broadcast - ' + JSON.stringify(msg));
-          }
-          console.log('onUpdateBid: %s',JSON.stringify(msg));
-        }
-    
     });
   console.log('Application worker %s started...', process.pid);
 });

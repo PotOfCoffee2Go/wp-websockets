@@ -1,8 +1,7 @@
 function uadu_websocket(room) {
 	this.socket = null;
-	this.data = {
-                room: room
-	};
+	this.room = room;
+	this.data = {};
 	
 	this.start();
 }
@@ -15,9 +14,9 @@ uadu_websocket.prototype.start = function start() {
 	this.socket.on('disconnect', function () {
 		self.changeIoIndicator('red');
 	});
-	this.socket.on('connected', function (msg) {
+	this.socket.on('Connected', function (msg) {
 		console.log('OnConnected: ' + JSON.stringify(msg));
-		self.emitConnected();
+		self.emitJoin();
 	});
  	this.socket.on('reload', function (msg) {
 		var x = document.getElementsByClassName("wdm_bidding_price");
@@ -27,9 +26,10 @@ uadu_websocket.prototype.start = function start() {
 	});
 }
  
-uadu_websocket.prototype.emitConnected = function emitConnected() {
-	this.socket.emit('connected',
+uadu_websocket.prototype.emitJoin = function emitJoin() {
+	this.socket.emit('Join',
 	        {
+	        	room: this.room,
 	            data: this.data,
 	            error: null
 	        });
@@ -37,9 +37,9 @@ uadu_websocket.prototype.emitConnected = function emitConnected() {
 }
 	
 uadu_websocket.prototype.emitUpdateBid = function emitUpdateBid(data) {
-	data.room = data.auction_id;
 	this.socket.emit('update bid',
 	        {
+				room: data.auction_id,
 	            data: data,
 	            error: null
 	        });

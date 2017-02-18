@@ -42,6 +42,14 @@ var server = http.createServer(function (req, res) {
       "author": pkg.author
     } ));
   }
+  // Get data from database
+  else if (url.indexOf('/bids/') == 0) {
+    var data = db.getData("/bids");
+    console.log(data);
+    res.writeHead(200);
+    res.end();
+ }
+
   // Return a web page from the 'static' directory
   else {
     fs.readFile('./static' + url, function (err, data) {

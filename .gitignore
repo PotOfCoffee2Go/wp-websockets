@@ -1,8 +1,9 @@
-# ignore gh-pages, Logs and flotsam
+# ignore gh-pages, Logs, flotsam and database
 gh-pages
 logs
 *.log
 flotsam
+db
 
 # Runtime data
 pids

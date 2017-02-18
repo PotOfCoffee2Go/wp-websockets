@@ -13,7 +13,7 @@
 
         /// - Got Join request from client
         ///   - Have them join the room they put in msg.data.room
-        onJoin: function onJoin(socket, msg) {
+        onJoin: function onJoin(socket, msg, db) {
             if (msg.room) {
               socket.join(msg.room);
               console.log('onJoin: ' + socket.id + ' joined room - ' + JSON.stringify(msg));
@@ -25,7 +25,7 @@
         
         /// - Got Leave request from client
         ///   - Have them leave the room they put in msg.data.room
-        onLeave: function onLeave(socket, msg) {
+        onLeave: function onLeave(socket, msg, db) {
             if (msg.room) {
               socket.leave(msg.room);
               console.log('onLeave: ' + socket.id + ' left room - ' + JSON.stringify(msg));
@@ -37,15 +37,18 @@
         
         /// #### Custom Events
         /// - A bid has been updated so broadcast to all others in the room
-        onUpdateBid: function onUpdateBid(socket, msg) {
+        onUpdateBid: function onUpdateBid(socket, msg, db) {
           if (msg.room) {
+            msg.received = new Date().toISOString();
             socket.broadcast.to(msg.room).emit('reload', msg);
+            msg.broadcast = new Date().toISOString();
+            db.push('/bids/' + msg.room + '[]', {updatebid: msg});
             console.log('onUpdateBid: broadcast - ' + JSON.stringify(msg));
           }
           console.log('onUpdateBid: %s',JSON.stringify(msg));
         }
-    
+  
 
 
-    }
+    };
 })();

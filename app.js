@@ -6,9 +6,17 @@ const http         = require('http'),
       contentTypes = require('./utils/content-types'),
       sysInfo      = require('./utils/sys-info'),
       env          = process.env,
-      msg          = require('./js/messages.js');
-      
+      msg          = require('./js/messages.js'),
+      JsonDB       = require('node-json-db');
+
+// Parse values found in package.json      
 var pkg = JSON.parse(fs.readFileSync(path.join('', './package.json')));
+
+// Create/Open database
+if (!fs.existsSync('./db')) {
+    fs.mkdirSync('./db');
+}
+var db  = new JsonDB("./db/messages", true, true); // true = auto save, true = pretty
 
 /// ---------- API HTTP Server
 /// Super simple web server
@@ -68,11 +76,11 @@ server.listen( env.PORT || 3000,  env.IP || 'localhost', function () {
 
         /// #### Standard Events
         socket.on('disconnect', function() {console.log('onDisconnect: ' + socket.id);});
-        socket.on('Join', function(message) {msg.onJoin(socket, message);});
-        socket.on('Leave', function(message) {msg.onLeave(socket, message);});
+        socket.on('Join', function(message) {msg.onJoin(socket, message, db);});
+        socket.on('Leave', function(message) {msg.onLeave(socket, message, db);});
         
         /// #### Custom Events
-        socket.on('update bid', function(message) {msg.onUpdateBid(socket, message);});
+        socket.on('update bid', function(message) {msg.onUpdateBid(socket, message, db);});
 
         // - Send a connected message to the client
         msg.emitConnected(socket);

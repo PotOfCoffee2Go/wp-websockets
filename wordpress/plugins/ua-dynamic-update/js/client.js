@@ -40,6 +40,8 @@ uadu_websocket.prototype.emitUpdateBid = function emitUpdateBid(data) {
 	this.socket.emit('update bid',
 	        {
 				room: data.auction_id,
+				received: null,
+				broadcast: null,
 	            data: data,
 	            error: null
 	        });

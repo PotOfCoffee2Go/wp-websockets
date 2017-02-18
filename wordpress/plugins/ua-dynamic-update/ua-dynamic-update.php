@@ -4,7 +4,7 @@ Plugin Name: UA-Dynamic-Update
 Plugin URI: http://codescullery.net/wp1
 Version: 1.0.0
 License: MIT
-Author: PotOfCoffee2GO
+Author: PotOfCoffee2Go
 Author URI: http://codescullery.net/poc2g/site/
 Description: Provides dynamic updates for the Ultimate Auction plugin
 */
@@ -29,10 +29,5 @@ function uadu_scripts() {
 
 }
 add_action('wp_enqueue_scripts', 'uadu_scripts');
-
-
-
-
-
 
 ?>

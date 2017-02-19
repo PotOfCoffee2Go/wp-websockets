@@ -40,6 +40,9 @@
         onUpdateBid: function onUpdateBid(socket, msg, db) {
           if (msg.room) {
             msg.received = new Date().toISOString();
+            if (msg.data && msg.data.auction_id && msg.data.auc_url) {
+              msg.data.auc_url += ('?ult_auc_id=' + msg.data.auction_id);
+            }
             socket.broadcast.to(msg.room).emit('reload', msg);
             msg.broadcast = new Date().toISOString();
             db.push('/bids/' + msg.room + '[]', {updatebid: msg});
@@ -47,6 +50,7 @@
           }
           console.log('onUpdateBid: %s',JSON.stringify(msg));
         }
+  
   
 
 

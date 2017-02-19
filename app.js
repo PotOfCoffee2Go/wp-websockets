@@ -44,10 +44,10 @@ var server = http.createServer(function (req, res) {
   }
   // Get data from database
   else if (url.indexOf('/bids/') == 0) {
-    var data = db.getData("/bids");
-    console.log(data);
-    res.writeHead(200);
-    res.end();
+    var data = db.getData("/bids/122");
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.end(JSON.stringify(data));
  }
 
   // Return a web page from the 'static' directory

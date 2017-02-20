@@ -3,20 +3,25 @@
 const http         = require('http'),
       fs           = require('fs'),
       path         = require('path'),
+      env          = process.env,
+      JsonDB       = require('node-json-db'),
+      
+      cfg          = require('./utils/config.js'),
       contentTypes = require('./utils/content-types'),
       sysInfo      = require('./utils/sys-info'),
-      env          = process.env,
       msg          = require('./js/messages.js'),
-      JsonDB       = require('node-json-db');
+      api          = require('./js/api.js'),
+      mysql        = require('./js/mysql.js');
+      
 
 // Parse values found in package.json      
 var pkg = JSON.parse(fs.readFileSync(path.join('', './package.json')));
 
 // Create/Open database
-if (!fs.existsSync('./db')) {
-    fs.mkdirSync('./db');
+if (!fs.existsSync(cfg.jsondb.dir)) {
+    fs.mkdirSync(cfg.jsondb.dir);
 }
-var db  = new JsonDB("./db/messages", true, true); // true = auto save, true = pretty
+var db  = new JsonDB(cfg.jsondb.file, true, true); // true = auto save, true = pretty
 
 /// ---------- API HTTP Server
 /// Super simple web server
@@ -42,12 +47,31 @@ var server = http.createServer(function (req, res) {
       "author": pkg.author
     } ));
   }
-  // Get data from database
-  else if (url.indexOf('/bids/') == 0) {
-    var data = db.getData("/bids/122");
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache, no-store');
-    res.end(JSON.stringify(data));
+  // Get data from local database
+  else if (url.indexOf('/api/') == 0) {
+    api.db(url, db, function(err, data) {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-cache, no-store');
+        if (err) {
+            res.end(JSON.stringify({error: err}));
+        }
+        else {
+            res.end(JSON.stringify(data));
+        }
+    });
+ }
+  // Get data from auction database
+  else if (url.indexOf('/mysql/') == 0) {
+    mysql.db(url, db, function(err, data) {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-cache, no-store');
+        if (err) {
+            res.end(JSON.stringify({error: err}));
+        }
+        else {
+            res.end(JSON.stringify(data));
+        }
+    });
  }
 
   // Return a web page from the 'static' directory

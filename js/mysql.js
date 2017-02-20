@@ -2,10 +2,11 @@
 (function () {
     "use strict";
     const mysql  = require('mysql'),
-         cfg    = require('../utils/config.js');
+          async  = require('async'),
+          cfg    = require('../utils/config.js');
 
     var connection = null;
-    
+
     module.exports = {
         db: function db(url, db, cb) {
             var action = {
@@ -16,30 +17,50 @@
             };
             
             
-            if (action.urlparts[3] === 'bidders' ) {
-                var aucId = action.urlparts[4];
+            if (action.urlparts[3] === 'auctions' ) {
                 connect();
-                connection.query('select * from wp_wdm_bidders where auction_id=' + aucId, function (berror, bresults, bfields) {
-                    if (berror) throw berror;
-                    connection.query('select * from wp_posts where id=' + aucId, function (perror, presults, pfields) {
-                        if (perror) throw perror;
-                        connection.query('select * from wp_postmeta where post_id=' + aucId, function (merror, mresults, mfields) {
-                            if (merror) throw merror;
-                            connection.query('select * from wp_comments where comment_post_id=' + aucId, function (cerror, cresults, cfields) {
-                                if (cerror) throw cerror;
-                                connection.end();
-                                
-                                var metadata = {};
-                                mresults.forEach(function(element) {
-                                    metadata[element.meta_key] = element.meta_value;
+
+                var aucId = action.urlparts[4];
+                connection.query('select * from wp_posts' + (aucId ? (' where id=' + aucId) : ''), function (perror, presults, pfields) {
+                    if (perror) throw perror;
+                    if (presults.length === 0) {
+                        connection.end();
+                        if (cb) cb(null, {auctions: [{ID: aucId, meta: {}, comments: [], bidders: []}]});
+                        return;
+                    }
+
+                    var auctions = [];
+
+                    async.forEachOf(presults, function (post, key, callback) {
+                        if (post.post_type === 'ultimate-auction') {
+                            connection.query('select * from wp_wdm_bidders where auction_id=' + post.ID, function (berror, bresults, bfields) {
+                                if (berror) console.log(berror);
+                                connection.query('select * from wp_postmeta where post_id=' + post.ID, function (merror, mresults, mfields) {
+                                    if (merror) console.log(merror);
+                                    connection.query('select * from wp_comments where comment_post_id=' + post.ID, function (cerror, cresults, cfields) {
+                                        if (cerror) console.log(cerror);
+                                        
+                                        var metadata = {};
+                                        mresults.forEach(function(element) {
+                                            metadata[element.meta_key] = element.meta_value;
+                                        });
+            
+                                        post.meta =  metadata;
+                                        post.comments =  cresults;
+                                        post.bidders =  bresults;
+                                        auctions.push(post);
+                                        callback();
+                                    });
                                 });
-    
-                                presults[0].meta =  metadata;
-                                presults[0].comments =  cresults;
-                                presults[0].bidders =  bresults;
-                                if (cb) cb(null, {auction: presults[0]});
                             });
-                        });
+                        }
+                        else {
+                            callback();
+                        }
+                    }, function (err) {
+                        if (err) throw err;
+                        connection.end();
+                        if (cb) cb(null, {auctions: auctions});
                     });
                 });
             }
@@ -61,7 +82,7 @@
     
     function connect() {
         connection = mysql.createConnection(cfg.mysql);
-        connection.connect();
+        // connection.connect();
     }
 
 })();

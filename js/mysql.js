@@ -17,17 +17,32 @@
             
             
             if (action.urlparts[3] === 'bidders' ) {
+                var aucId = action.urlparts[4];
                 connect();
-                connection.query('select * from wp_wdm_bidders where auction_id=' + action.urlparts[4], function (error, results, fields) {
-                if (error) throw error;
-                connection.end();
-                if (cb) cb(null, results);
+                connection.query('select * from wp_wdm_bidders where auction_id=' + aucId, function (berror, bresults, bfields) {
+                    if (berror) throw berror;
+                    connection.query('select * from wp_posts where id=' + aucId, function (perror, presults, pfields) {
+                        if (perror) throw perror;
+                        connection.query('select * from wp_postmeta where post_id=' + aucId, function (merror, mresults, mfields) {
+                            if (merror) throw merror;
+                            connection.query('select * from wp_comments where comment_post_id=' + aucId, function (cerror, cresults, cfields) {
+                                if (cerror) throw cerror;
+                                connection.end();
+                                
+                                var metadata = {};
+                                mresults.forEach(function(element) {
+                                    metadata[element.meta_key] = element.meta_value;
+                                });
+    
+                                presults[0].meta =  metadata;
+                                presults[0].comments =  cresults;
+                                presults[0].bidders =  bresults;
+                                if (cb) cb(null, {auction: presults[0]});
+                            });
+                        });
+                    });
                 });
-
-                //bidders(action);
             }
-
-
         },
 
     };
@@ -37,7 +52,9 @@
         connection.connect();
     }
 
-
+    function bidders(error, results, fields) {
+        
+    }
  
  
 

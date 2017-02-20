@@ -43,6 +43,18 @@
                     });
                 });
             }
+            
+            
+            else if (action.urlparts[3] === 'users' ) {
+                var userId = action.urlparts[4];
+                connect();
+                connection.query('select * from wp_users' + (userId ? (' where id=' + userId) : ''), function (uerror, uresults, ufields) {
+                    if (uerror) throw uerror;
+                    connection.end();
+                    if (cb) cb(null, {users: uresults});
+                });
+            }
+            
         },
 
     };
@@ -51,12 +63,6 @@
         connection = mysql.createConnection(cfg.mysql);
         connection.connect();
     }
-
-    function bidders(error, results, fields) {
-        
-    }
- 
- 
 
 })();
 

@@ -1,7 +1,8 @@
 module.exports = {
     jsondb: {
         dir : './db',
-        file: './db/messages',
+        messageDb: './db/messages',
+        auctionDb: './db/auctions',
     },
     mysql: {
         host     : '',

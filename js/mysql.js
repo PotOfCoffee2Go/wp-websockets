@@ -8,7 +8,7 @@
     var connection = null;
 
     module.exports = {
-        db: function db(url, db, cb) {
+        db: function db(url, cb) {
             var action = {
                 url: url,
                 db: db,
@@ -19,7 +19,7 @@
             
             if (action.urlparts[3] === 'auctions' ) {
                 var aucId = action.urlparts[4];
-                connect();
+                var connection = mysql.createConnection(cfg.mysql);
                 connection.query('select * from wp_posts where post_type = "ultimate-auction" ' + 
                         (aucId ? (' and id=' + aucId) : ''), function (perror, presults, pfields) {
                     if (perror) throw perror;
@@ -53,7 +53,6 @@
                                         });
             
                                         post.meta =  metadata;
-                                        post.meta.ryan = 'hi!!!';
                                         post.categories =  tresults;
                                         post.comments =  cresults;
                                         post.bidders =  bresults;
@@ -74,7 +73,7 @@
             
             else if (action.urlparts[3] === 'users' ) {
                 var userId = action.urlparts[4];
-                connect();
+                var connection = mysql.createConnection(cfg.mysql);
                 connection.query('select * from wp_users' + (userId ? (' where id=' + userId) : ''), function (uerror, uresults, ufields) {
                     if (uerror) throw uerror;
                     connection.end();
@@ -91,7 +90,7 @@
                     'LEFT JOIN wp_postmeta ON wp_posts.ID = wp_postmeta.post_id ' +
                     'LEFT JOIN wp_comments ON wp_posts.ID = wp_comments.comment_post_id ' +
                     (aucId ? (' where wp_posts.id=' + aucId) : '');
-                connect();
+                var connection = mysql.createConnection(cfg.mysql);
                 connection.query(options, function (error, results, fields) {
                     if (error) throw error;
                     connection.end();
@@ -104,14 +103,6 @@
 
     };
     
-    function connect() {
-        connection = mysql.createConnection(cfg.mysql);
-        // connection.connect();
-    }
-
-
-
-
 
 })();
 

@@ -1,5 +1,7 @@
 (function () {
     "use strict";
+     var api  = require('./api.js');
+
     module.exports = {
         /// #### Standard Events
         emitConnected: function emitConnected(socket) {
@@ -13,7 +15,7 @@
 
         /// - Got Join request from client
         ///   - Have them join the room they put in msg.data.room
-        onJoin: function onJoin(socket, msg, db) {
+        onJoin: function onJoin(socket, msg) {
             if (msg.room) {
               socket.join(msg.room);
               console.log('onJoin: ' + socket.id + ' joined room - ' + JSON.stringify(msg));
@@ -25,7 +27,7 @@
         
         /// - Got Leave request from client
         ///   - Have them leave the room they put in msg.data.room
-        onLeave: function onLeave(socket, msg, db) {
+        onLeave: function onLeave(socket, msg) {
             if (msg.room) {
               socket.leave(msg.room);
               console.log('onLeave: ' + socket.id + ' left room - ' + JSON.stringify(msg));
@@ -37,7 +39,7 @@
         
         /// #### Custom Events
         /// - A bid has been updated so broadcast to all others in the room
-        onUpdateBid: function onUpdateBid(socket, msg, db) {
+        onUpdateBid: function onUpdateBid(socket, msg) {
           if (msg.room) {
             msg.received = new Date().toISOString();
             if (msg.data && msg.data.auction_id && msg.data.auc_url) {
@@ -45,7 +47,7 @@
             }
             socket.broadcast.to(msg.room).emit('reload', msg);
             msg.broadcast = new Date().toISOString();
-            db.push('/bids/' + msg.room + '[]', {updatebid: msg});
+            api.messageDb.push('/bids/' + msg.room + '[]', {updatebid: msg});
             console.log('onUpdateBid: broadcast - ' + JSON.stringify(msg));
           }
           console.log('onUpdateBid: %s',JSON.stringify(msg));

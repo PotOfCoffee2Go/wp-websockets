@@ -4,7 +4,8 @@
     const mysql  = require('mysql'),
           async  = require('async'),
           cfg    = require('../utils/config.js'),
-          api    = require('./api.js');
+          api    = require('./api.js'),
+          tform  = require('js-object-transform');
 
 
     var mySql = module.exports = {
@@ -51,12 +52,14 @@
                                         mresults.forEach(function(element) {
                                             metadata[element.meta_key] = element.meta_value;
                                         });
-            
-                                        post.meta =  metadata;
-                                        post.categories =  tresults;
-                                        post.comments =  cresults;
-                                        post.bidders =  bresults;
-                                        auctions.push(post);
+                                        
+                                        var data = {};
+                                        data.post = post;
+                                        data.meta =  metadata;
+                                        data.categories =  tresults;
+                                        data.comments =  cresults;
+                                        data.bidders =  bresults;
+                                        auctions.push(data);
                                         callback();
                                     });
                                 });
@@ -87,8 +90,16 @@
                     if (err) throw err;
                     mySql.db('/mysql/db/users/', function(uerr, udata) {
                         if (uerr) throw uerr;
-                        udata.auctions = data.auctions;
-                        api.auctionDb.push('/', udata);
+                        var users = {};
+                        udata.users.forEach(function(user) {
+                            users[user.ID] = user;
+                        });
+                        var auctions = {};
+                        data.auctions.forEach(function(auction) {
+                            auctions[auction.post.ID] = auction;
+                        });
+                        
+                        api.auctionDb.push('/', {user: users, auction: auctions});
                         if (cb) cb(null, {result: 'Done!!'});
                     });
                     

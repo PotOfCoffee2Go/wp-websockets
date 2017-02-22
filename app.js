@@ -42,7 +42,7 @@ var server = http.createServer(function (req, res) {
     }
 
     // Get data from local databases
-    else if (url.indexOf('/api/messages/') == 0) {
+    else if (url.indexOf('/api/messages') == 0) {
         api.messages(url, function(err, data) {
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Cache-Control', 'no-cache, no-store');
@@ -54,7 +54,7 @@ var server = http.createServer(function (req, res) {
             }
         });
     }
-    else if (url.indexOf('/api/auctions/') == 0) {
+    else if (url.indexOf('/api/auctions') == 0) {
         api.auctions(url, function(err, data) {
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Cache-Control', 'no-cache, no-store');

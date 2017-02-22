@@ -3,11 +3,11 @@
     "use strict";
     const mysql  = require('mysql'),
           async  = require('async'),
-          cfg    = require('../utils/config.js');
+          cfg    = require('../utils/config.js'),
+          api    = require('./api.js');
 
-    var connection = null;
 
-    module.exports = {
+    var mySql = module.exports = {
         db: function db(url, cb) {
             var action = {
                 url: url,
@@ -82,24 +82,20 @@
             }
             
 
-            else if (action.urlparts[3] === 'test' ) {
-                aucId = action.urlparts[4];
-                var options = {nestTables: false};
-                options.sql = 'select * from wp_posts ' + 
-                    'LEFT JOIN wp_wdm_bidders ON wp_posts.ID = wp_wdm_bidders.auction_id ' +
-                    'LEFT JOIN wp_postmeta ON wp_posts.ID = wp_postmeta.post_id ' +
-                    'LEFT JOIN wp_comments ON wp_posts.ID = wp_comments.comment_post_id ' +
-                    (aucId ? (' where wp_posts.id=' + aucId) : '');
-                var connection = mysql.createConnection(cfg.mysql);
-                connection.query(options, function (error, results, fields) {
-                    if (error) throw error;
-                    connection.end();
-                    if (cb) cb(null, {auctions: results});
+            else if (action.urlparts[3] === 'rebuild' ) {
+                mySql.db('/mysql/db/auctions/', function(err, data) {
+                    if (err) throw err;
+                    mySql.db('/mysql/db/users/', function(uerr, udata) {
+                        if (uerr) throw uerr;
+                        udata.auctions = data.auctions;
+                        api.auctionDb.push('/', udata);
+                        if (cb) cb(null, {result: 'Done!!'});
+                    });
+                    
                 });
             }
 
-            
-        },
+        }
 
     };
     

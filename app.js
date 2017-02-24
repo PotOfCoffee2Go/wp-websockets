@@ -119,6 +119,16 @@ server.listen( env.PORT || 3000,env.IP || 'localhost', function () {
         socket.on('Leave', function(message) {msg.onLeave(socket, message);});
         
         /// #### Custom Events
+        socket.on('getAuctions', function(url) {
+            api.auctions(url, function(err, data) {
+                if (err) throw err;
+                socket.emit('getAuctions', {
+                  room: null,
+                  data: data,
+                  error: null
+                });
+            });
+        });
         socket.on('update bid', function(message) {msg.onUpdateBid(socket, message);});
 
         // - Send a connected message to the client

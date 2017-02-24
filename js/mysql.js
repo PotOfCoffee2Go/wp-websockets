@@ -92,11 +92,11 @@
                         if (uerr) throw uerr;
                         var users = {};
                         udata.users.forEach(function(user) {
-                            users[user.ID] = user;
+                            users['u' + user.ID] = user;
                         });
                         var auctions = {};
                         data.auctions.forEach(function(auction) {
-                            auctions[auction.post.ID] = auction;
+                            auctions['a' + auction.post.ID] = auction;
                         });
                         
                         api.auctionDb.push('/', {user: users, auction: auctions});

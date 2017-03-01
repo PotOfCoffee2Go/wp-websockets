@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.1.5",
-    "js-object-transform": "^1.1.1-0",
+    "express": "^4.14.1",
     "mysql": "^2.13.0",
     "node-json-db": "^0.7.3",
     "phpass": "^0.1.1",

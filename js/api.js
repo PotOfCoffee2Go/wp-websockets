@@ -2,8 +2,7 @@
     "use strict";
     var   fs        = require('fs'),
           cfg       = require('../utils/config.js'),
-          JsonDB    = require('node-json-db'),
-          tform     = require('js-object-transform');
+          JsonDB    = require('node-json-db');
           
     // Create/Open database
     if (!fs.existsSync(cfg.jsondb.dir)) {

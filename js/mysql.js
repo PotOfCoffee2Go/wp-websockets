@@ -4,8 +4,7 @@
     const mysql  = require('mysql'),
           async  = require('async'),
           cfg    = require('../utils/config.js'),
-          api    = require('./api.js'),
-          tform  = require('js-object-transform');
+          api    = require('./api.js');
 
 
     var mySql = module.exports = {

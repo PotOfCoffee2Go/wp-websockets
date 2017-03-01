@@ -1,25 +1,26 @@
 'use strict';
 
 const
-    // Standard Node stuff
-         fs = require('fs'),
-       path = require('path'),
-        env = process.env,
-    
-    // Routes
-        msg = require('./js/messages.js'),  // WebSocket message handlers
-        api = require('./js/api.js'),       // HTTP/AJAX request handlers
-      mysql = require('./js/mysql.js'),     // WordPress Database access
-      
-    // Server OS info  
-    sysInfo = require('./utils/sys-info');
+// Standard Node stuff
+     fs = require('fs'),
+   path = require('path'),
+    env = process.env,
+
+// Routes
+    api = require('./js/api.js'),       // HTTP/AJAX request handlers
+    msg = require('./js/messages.js'),  // WebSocket message handlers
+  mysql = require('./js/mysql.js'),     // WordPress Database access
+  
+// Server OS info  
+sysInfo = require('./utils/sys-info');  // Server OS, Node, NPM info
 
 
 /// HTTP and WebSocket stack
-var express = require('express'),  
-        app = express(),  
-     server = require('http').createServer(app), 
-        ios = require('socket.io')(server);
+var
+express = require('express'),  
+    app = express(),  
+ server = require('http').createServer(app), 
+    ios = require('socket.io')(server);
 
 /// Web pages and content
 app.use(express.static(__dirname + '/static'));
@@ -29,10 +30,14 @@ var pkg = JSON.parse(fs.readFileSync(path.join('', './package.json')));
 
 app.get('/version', function(req, res, next) {  
         sendJson(res, null, {
-            "name": pkg.name,
-            "version": pkg.version,
-            "description": pkg.description,
-            "author": pkg.author
+            package: {
+                name: pkg.name,
+                version: pkg.version,
+                description: pkg.description,
+                author: pkg.author,
+                contributors: pkg.contributors,
+                license: pkg.license },
+            server: sysInfo.pretty()
         });
 });
 

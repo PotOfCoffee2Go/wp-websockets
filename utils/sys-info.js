@@ -27,10 +27,11 @@ exports.gen = function () {
   }, {
     name:  'Total Memory',
     value: `${Math.round(os.totalmem() / 1048576)} MB`
-  }, {
-    name:  'Gear Memory',
-    value: `${env.OPENSHIFT_GEAR_MEMORY_MB} MB`
-  }, {
+  },// {
+   // name:  'Gear Memory',
+   // value: `${env.OPENSHIFT_GEAR_MEMORY_MB} MB`
+  // },
+  {
     name:  'NODE_ENV',
     value: env.NODE_ENV
   }];
@@ -44,4 +45,14 @@ exports.poll = function () {
     name: 'Uptime',
     value: `${os.uptime()} s`
   }];
+};
+
+exports.pretty = function() {
+  var info = exports.gen();
+  var result = {};
+  info.forEach(function(data) {
+    if (data.value)
+      result[data.name] = data.value;
+  });
+  return result;
 };

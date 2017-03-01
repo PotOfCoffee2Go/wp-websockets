@@ -8,6 +8,10 @@
     "start": "node app.js"
   },
   "author": "PotOfCoffee2Go",
+  "contributors": [
+    {"name": "Jim Kauffman"},
+    {"name": "Yisheng", "url":"https://github.com/Yishengtang"}
+    ],
   "license": "ISC",
   "dependencies": {
     "async": "^2.1.5",

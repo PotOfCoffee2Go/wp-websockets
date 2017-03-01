@@ -10,4 +10,4 @@ module.exports = {
         password : '',
         database : ''
     }
-}
+};

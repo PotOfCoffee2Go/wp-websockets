@@ -1,4 +1,6 @@
-const os = require('os'),
+const fs = require('fs'),
+      path = require('path'),
+      os = require('os'),
       exec = require('child_process').execSync,
       env = process.env;
 
@@ -55,4 +57,20 @@ exports.pretty = function() {
       result[data.name] = data.value;
   });
   return result;
+};
+
+/// Get version info found in package.json
+var pkg = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+
+exports.version = function() {
+  return  {
+          package: {
+              name: pkg.name,
+              version: pkg.version,
+              description: pkg.description,
+              author: pkg.author,
+              contributors: pkg.contributors,
+              license: pkg.license },
+          server: exports.pretty()
+      };
 };

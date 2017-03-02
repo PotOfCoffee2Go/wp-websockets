@@ -2,8 +2,6 @@
 
 const
 // Standard Node stuff
-     fs = require('fs'),
-   path = require('path'),
     env = process.env,
 
 // Routes
@@ -11,8 +9,8 @@ const
     msg = require('./js/messages.js'),  // WebSocket message handlers
   mysql = require('./js/mysql.js'),     // WordPress Database access
   
-// Server OS info  
-sysInfo = require('./utils/sys-info');  // Server OS, Node, NPM info
+// Package and Server OS info  
+sysInfo = require('./utils/sys-info');  // Package, Server OS, Node, NPM info
 
 
 /// HTTP and WebSocket stack
@@ -22,26 +20,19 @@ express = require('express'),
  server = require('http').createServer(app), 
     ios = require('socket.io')(server);
 
-/// Web pages and content
-app.use(express.static(__dirname + '/static'));
+/// Frontend(s) html, js, stylesheet, etc delivery
+app.use(express.static(__dirname + '/www'));
 
-/// Get version info found in package.json
-var pkg = JSON.parse(fs.readFileSync(path.join('', './package.json')));
 
+/// ---------- Routes 
+
+/// Version info
 app.get('/version', function(req, res, next) {  
-        sendJson(res, null, {
-            package: {
-                name: pkg.name,
-                version: pkg.version,
-                description: pkg.description,
-                author: pkg.author,
-                contributors: pkg.contributors,
-                license: pkg.license },
-            server: sysInfo.pretty()
-        });
+        sendJson(res, null, sysInfo.version());
 });
 
-/// ---------- API Routes
+/// ---------- Local Database Routes
+//  db/auctions database
 app.get('/api/auctions/:collection?/:id?/:objname?', function(req, res, next) {
     console.log(req.params);
     api.auctions(req.url, function(err, data) {
@@ -49,6 +40,7 @@ app.get('/api/auctions/:collection?/:id?/:objname?', function(req, res, next) {
     });
 });
 
+//  db/messages database
 app.get('/api/messages/:collection?/:id?', function(req, res, next) {
     console.log(req.params);
     api.messages(req.url, function(err, data) {
@@ -56,7 +48,7 @@ app.get('/api/messages/:collection?/:id?', function(req, res, next) {
     });
 });
 
-/// ---------- MySql DB access
+/// ---------- WordPress MySql Database access
 app.get('/mysql/db/:command?', function(req, res, next) {
     console.log(req.params);
     mysql.db(req.url, function(err, data) {
@@ -64,7 +56,7 @@ app.get('/mysql/db/:command?', function(req, res, next) {
     });
 });
 
-/// Send JSON response
+/// Helper to send JSON responses
 function sendJson(res, err, data) {
         res.setHeader('Cache-Control', 'no-cache, no-store');
         if (err) {
@@ -76,12 +68,14 @@ function sendJson(res, err, data) {
 }
 
 
+/// ---------- WebSocket Server ----------
+
+
 // For Cloud9 the port/ip is env.PORT and env.IP
 // For OpenShift the port/ip is env.OPENSHIFT_NODEJS_PORT and env.OPENSHIFT_NODEJS_IP
 console.log('ip: ' + env.IP);
 console.log('port: ' + env.PORT);
 
-/// ---------- WebSocket Server ----------
 server.listen( env.PORT || 3000, env.IP || 'localhost', function () {
     // When a client connects
     ios.on('connection', function (socket) {

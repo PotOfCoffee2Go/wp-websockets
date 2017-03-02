@@ -68,40 +68,15 @@ function sendJson(res, err, data) {
 }
 
 
-/// ---------- WebSocket Server ----------
-
-
 // For Cloud9 the port/ip is env.PORT and env.IP
 // For OpenShift the port/ip is env.OPENSHIFT_NODEJS_PORT and env.OPENSHIFT_NODEJS_IP
-console.log('ip: ' + env.IP);
-console.log('port: ' + env.PORT);
-
 server.listen( env.PORT || 3000, env.IP || 'localhost', function () {
-    // When a client connects
+    /// ---------- WebSocket Server ----------
+    // When a socket.io client connects - initialize it's message handlers
     ios.on('connection', function (socket) {
-
-        /// #### Standard Events
-        socket.on('disconnect', function() {console.log('onDisconnect: ' + socket.id);});
-        socket.on('Join', function(message) {msg.onJoin(socket, message);});
-        socket.on('Leave', function(message) {msg.onLeave(socket, message);});
-        
-        /// #### Custom Events
-        socket.on('getAuctions', function(url) {
-            api.auctions(url, function(err, data) {
-                if (err) throw err;
-                socket.emit('getAuctions', {
-                  room: null,
-                  data: data,
-                  error: null
-                });
-            });
-        });
-        socket.on('update bid', function(message) {msg.onUpdateBid(socket, message);});
-
-        // - Send a connected message to the client
-        msg.emitConnected(socket);
-
+        msg.initMessageHandlers(socket);
     });
+
     console.log('Application worker %s started...', process.pid);
 });
 

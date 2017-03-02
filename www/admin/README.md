@@ -1,4 +1,6 @@
-# Modified a free Bootstrap template [Heroic Features](http://startbootstrap.com/template-overviews/heroic-features/) is a multipurpose HTML template for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/).
+# Based on a modified free Bootstrap template:
+
+[Heroic Features](http://startbootstrap.com/template-overviews/heroic-features/) is a multipurpose HTML template for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/).
 
 
 ## Credits

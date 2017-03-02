@@ -1,42 +1,45 @@
     'use strict';
-    $(function() {/* global $ poc2go Handlebars*/
+    $(function() {/* global $ obapi Handlebars */
     
-        poc2go.io.connect('https://wp-websockets-potofcoffee2go.c9users.io');
+        obapi.io.connect('https://wp-websockets-potofcoffee2go.c9users.io');
 
+        // Catch-all custom events (will not see connect/disconnect/etc.)
+        obapi.on("*",function(event, msg) {
+            console.log('***', event, '***', msg);
+        });
+
+        /// Standard socket.io events
         // socket.io connect
-        poc2go.on('connect', function() {
+        obapi.on('connect', function() {
             console.log('Established WebSocket connection to auction server');
         });
         // socket.io disconnect
-        poc2go.on('disconnect', function() {
+        obapi.on('disconnect', function() {
             console.log('WebSocket disconnected from auction server');
         });
 
+        /// Custom socket.io events
         // Connection accepted
-        poc2go.on('Connected', function(msg) {
+        obapi.on('Connected', function(msg) {
             console.log('Connected to auction server');
-            console.log(msg);
+            obapi.io.emit('/api/auctions/auction', '');    // Get all auctions
+            obapi.io.emit('/api/auctions/user', '');       // Get all users
         });
-        // List of auctions
-        poc2go.on('Auctions', function(msg) {
-            console.log('List of Auctions');
-            console.log(msg);
 
-            var source = 
-                '<div id="feeder-a{{post.ID}}" class="col-md-3 col-sm-6 hero-feature">' +
-                '    <div class="thumbnail">' +
-                '        <img src="{{meta.wdm_auction_thumb}}" style="display:block;max-width:230px;max-height:95px;" alt="">' +
-                '        <div class="caption">' +
-                '            <h3>{{post.post_title}}</h3>' +
-                '            <p>{{post.post_content}}</p>' +
-                '            <p>Status: {{categories.0.name}}</p>' +
-                '            <p>' +
-                '                <a onClick="poc2go.auctionClick(\'a{{post.ID}}\');"  href="#" class="btn btn-primary">Auction!</a>' + 
-                '                <a onClick="poc2go.moreInfoClick(\'a{{post.ID}}\');" href="#" class="btn btn-default">More Info</a>' +
-                '            </p>' +
-                '        </div>' +
-                '    </div>' +
-                '</div>';
+        // List of users
+        obapi.on('/api/auctions/user', function(msg) {
+            // console.log('*** Users', msg);
+            var source = $('#users-info-template').html();
+            var template = Handlebars.compile(source);
+            Object.keys(msg.data.user).forEach(function(user) {
+                $('#users-info').append(template(msg.data.user[user]));
+            });
+        });
+
+        // List of auctions
+        obapi.on('/api/auctions/auction', function(msg) {
+            // console.log('*** Auctions', msg);
+            var source = $('#auction-item-template').html();
             var template = Handlebars.compile(source);
             Object.keys(msg.data.auction).forEach(function(item) {
                 $('#auction-items').append(template(msg.data.auction[item]));
@@ -79,11 +82,11 @@
             console.log( "Handler for call-to-action .click() called." );
         });
 
-        poc2go.auctionClick = function auctionClick(item) {
+        obapi.auctionClick = function auctionClick(item) {
             alert(item + ' Auction Page');
         }
         
-        poc2go.moreInfoClick = function moreInfoClick(item) {
+        obapi.moreInfoClick = function moreInfoClick(item) {
             alert(item+ ' More Info Page');
         }
 

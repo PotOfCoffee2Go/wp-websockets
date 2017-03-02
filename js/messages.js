@@ -11,10 +11,21 @@
             socket.on('Leave', function(message) {msg.onLeave(socket, message);});
             
             /// #### Custom Messages
-            socket.on('getAuctions', function(url) {
-                api.auctions(url, function(err, data) {
+            socket.on('/api/auctions/auction', function(resource) {
+                api.auctions('/api/auctions/auction' + (resource ? resource : ''), function(err, data) {
                     if (err) throw err;
-                    socket.emit('getAuctions', {
+                    socket.emit('/api/auctions/auction', {
+                        room: null,
+                        data: data,
+                        error: null
+                    });
+                });
+            });
+
+            socket.on('/api/auctions/user', function(resource) {
+                api.auctions('/api/auctions/user' + (resource ? resource : ''), function(err, data) {
+                    if (err) throw err;
+                    socket.emit('/api/auctions/user', {
                         room: null,
                         data: data,
                         error: null

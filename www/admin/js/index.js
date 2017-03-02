@@ -1,50 +1,53 @@
     'use strict';
     $(function() {/* global $ obapi Handlebars */
     
-        obapi.io.connect('https://wp-websockets-potofcoffee2go.c9users.io');
+        obapi.connect('https://wp-websockets-potofcoffee2go.c9users.io');
 
         // Catch-all custom events (will not see connect/disconnect/etc.)
-        obapi.on("*",function(event, msg) {
+        obapi.on('*',function(event, msg) {
             console.log('***', event, '***', msg);
         });
 
         /// Standard socket.io events
-        // socket.io connect
+        //  socket.io connect
         obapi.on('connect', function() {
             console.log('Established WebSocket connection to auction server');
         });
-        // socket.io disconnect
+        //  socket.io disconnect
         obapi.on('disconnect', function() {
             console.log('WebSocket disconnected from auction server');
         });
 
         /// Custom socket.io events
-        // Connection accepted
+        //  Connection accepted
         obapi.on('Connected', function(msg) {
             console.log('Connected to auction server');
-            obapi.io.emit('/api/auctions/auction', '');    // Get all auctions
-            obapi.io.emit('/api/auctions/user', '');       // Get all users
+            obapi.get('/api/auctions/auction');    // Get all auctions
+            obapi.get('/api/auctions/user');       // Get all users
+            obapi.get('/api/messages');            // Get all messages
         });
 
-        // List of users
-        obapi.on('/api/auctions/user', function(msg) {
-            // console.log('*** Users', msg);
-            var source = $('#users-info-template').html();
-            var template = Handlebars.compile(source);
-            Object.keys(msg.data.user).forEach(function(user) {
-                $('#users-info').append(template(msg.data.user[user]));
-            });
-        });
+        obapi.on('Get', function(msg) {
+            // List of auctions? Populate #auction-items
+            if (msg.location.indexOf('/api/auctions/auction') === 0) { 
+                $('#auction-items').html('');
+                var auctionsTemplate = Handlebars.compile($('#auction-item-template').html());
+                Object.keys(msg.data.auction).forEach(function(item) {
+                    $('#auction-items').append(auctionsTemplate(msg.data.auction[item]));
+                });
+            }
+            // List of users?  Populate #users-info
+            else if (msg.location.indexOf('/api/auctions/user') === 0) {
+                $('#users-info').html('');
+                var usersTemplate = Handlebars.compile($('#users-info-template').html());
+                Object.keys(msg.data.user).forEach(function(user) {
+                    $('#users-info').append(usersTemplate(msg.data.user[user]));
+                });
+            }
 
-        // List of auctions
-        obapi.on('/api/auctions/auction', function(msg) {
-            // console.log('*** Auctions', msg);
-            var source = $('#auction-item-template').html();
-            var template = Handlebars.compile(source);
-            Object.keys(msg.data.auction).forEach(function(item) {
-                $('#auction-items').append(template(msg.data.auction[item]));
-            });
-
+            if (msg.error) {
+                console.log(msg.error.name, ': ', msg.error.message);
+            }
         });
 
         $( "#about" ).click(function() {

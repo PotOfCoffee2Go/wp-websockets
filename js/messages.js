@@ -1,38 +1,88 @@
 (function () {
     "use strict";
     var api  = require('./api.js');
+    
+    var payload = function(resource, data, location, status, error) {
+        return {
+            resource: resource,
+            data: data ? data : {},
+            location: location,
+            status: status ? status : {code: 200, text: '200 - OK'},
+            error: error ? error : null };
+    };
+
+    /// - Got Join request from client
+    function onJoin(socket, msg) {
+        if (msg.resource) {
+            socket.join(msg.resource);
+            console.log('onJoin: ' + socket.id + ' joined resource - ' + msg.resource);
+        }
+        else {
+            console.log('onJoin: ' + socket.id + ' resource to join was not specified');
+        }
+    }
+
+    /// - Got Leave request from client
+    function onLeave(socket, msg) {
+        if (msg.resource) {
+            socket.leave(msg.resource);
+            console.log('onLeave: ' + socket.id + ' left resource - ' + msg.resource);
+        }
+        else {
+            console.log('onLeave: ' + socket.id + ' resource to leave was not specified ');
+        }
+    }
+
+    /// - Get request from client
+    function onGet(socket, msg) {
+        if (typeof msg.resource !== 'string') {
+            console.log('onGet: ' + socket.id + ' Missing field (resource)');
+            socket.emit('Get',
+                payload(msg.resource, {} ,null,
+                    {code:400, text: '400 - Bad Request - Missing field (resource)'},
+                    {name:'RestError', message:'400 - Bad Request - Missing field (resource)'}));
+            return;
+        }
+        
+        var resPath = msg.resource.split('/');
+        // Is /api/:command/ request?
+        if (resPath[1] === 'api' && typeof api[resPath[2]] === 'function') {
+            api[resPath[2]](msg.resource, function(err, data) {
+                if (!err) {
+                    socket.emit('Get', payload(msg.resource, data, msg.resource, null, null));
+                }
+                else {
+                    console.log('onGet: ' + socket.id + ' server error ' + err.message);
+                    socket.emit('Get', 
+                        payload(msg.resource, {} ,null,
+                            {code:500, text: '500 - Internal Server Error'},
+                            {name: err.name, message: err.message}));
+                }
+            });
+        }
+        else {
+            console.log('onGet: ' + socket.id + ' resource ' + msg.resource + ' not found ');
+            socket.emit('Get', 
+                payload(msg.resource, {} ,null,
+                    {code:404, text: '404 - Not Found'},
+                    {name:'RestError', message:'404 - Not Found'}));
+        }
+    }
 
     var msg = module.exports = {
 
         initMessageHandlers: function initMessageHandlers(socket) {
             /// #### Standard Messages
             socket.on('disconnect', function() {console.log('onDisconnect: ' + socket.id);});
-            socket.on('Join', function(message) {msg.onJoin(socket, message);});
-            socket.on('Leave', function(message) {msg.onLeave(socket, message);});
-            
-            /// #### Custom Messages
-            socket.on('/api/auctions/auction', function(resource) {
-                api.auctions('/api/auctions/auction' + (resource ? resource : ''), function(err, data) {
-                    if (err) throw err;
-                    socket.emit('/api/auctions/auction', {
-                        room: null,
-                        data: data,
-                        error: null
-                    });
-                });
-            });
+            socket.on('Join', function(message) {onJoin(socket, message);});
+            socket.on('Leave', function(message) {onLeave(socket, message);});
 
-            socket.on('/api/auctions/user', function(resource) {
-                api.auctions('/api/auctions/user' + (resource ? resource : ''), function(err, data) {
-                    if (err) throw err;
-                    socket.emit('/api/auctions/user', {
-                        room: null,
-                        data: data,
-                        error: null
-                    });
-                });
-            });
-            
+            socket.on('Get', function(message) {onGet(socket, message);});
+            socket.on('Post', function(message) {msg.onPost(socket, message);});
+            socket.on('Put', function(message) {msg.onPut(socket, message);});
+            socket.on('Patch', function(message) {msg.onPatch(socket, message);});
+            socket.on('Delete', function(message) {msg.onDelete(socket, message);});
+
             socket.on('update bid', function(message) {msg.onUpdateBid(socket, message);});
 
             // - Send a 'Connected' message back to the client
@@ -42,35 +92,7 @@
         /// #### Standard Events
         emitConnected: function emitConnected(socket) {
             // Send connected
-            socket.emit('Connected', {
-                room: null,
-                data: {},
-                error: null
-            });
-        },
-
-        /// - Got Join request from client
-        ///   - Have them join the room they put in msg.room
-        onJoin: function onJoin(socket, msg) {
-            if (msg.room) {
-                socket.join(msg.room);
-                console.log('onJoin: ' + socket.id + ' joined room - ' + JSON.stringify(msg));
-            }
-            else {
-                console.log('onJoin: ' + socket.id + ' msg.room was not specified ' + JSON.stringify(msg));
-            }
-        },
-        
-        /// - Got Leave request from client
-        ///   - Have them leave the room they put in msg.room
-        onLeave: function onLeave(socket, msg) {
-            if (msg.room) {
-                socket.leave(msg.room);
-                console.log('onLeave: ' + socket.id + ' left room - ' + JSON.stringify(msg));
-            }
-            else {
-                console.log('onLeave: ' + socket.id + ' msg.room was not specified ' + JSON.stringify(msg));
-            }
+            socket.emit('Connected', payload('/', {},'/',null,null));
         },
 
         /// #### Custom Events

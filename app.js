@@ -2,15 +2,19 @@
 
 const
 // Standard Node stuff
-    env = process.env,
+           env = process.env,
+
+// Middleware
+    bodyParser = require("body-parser"),
 
 // Routes
-    api = require('./js/api.js'),       // HTTP/AJAX request handlers
-    msg = require('./js/messages.js'),  // WebSocket message handlers
-  mysql = require('./js/mysql.js'),     // WordPress Database access
+           api = require('./js/api.js'),       // HTTP/AJAX request handlers
+           msg = require('./js/messages.js'),  // WebSocket message handlers
+       storage = require('./js/storage.js'),   // General purpose Database
+         mysql = require('./js/mysql.js'),     // WordPress Database access
   
 // Package and Server OS info  
-sysInfo = require('./utils/sys-info');  // Package, Server OS, Node, NPM info
+       sysInfo = require('./utils/sys-info');  // Package, Server OS, Node, NPM info
 
 
 /// HTTP and WebSocket stack
@@ -22,7 +26,8 @@ express = require('express'),
 
 /// Frontend(s) html, js, stylesheet, etc delivery
 app.use(express.static(__dirname + '/www'));
-
+/// JSON body parser
+app.use(bodyParser.json());
 
 /// ---------- Routes 
 
@@ -47,6 +52,23 @@ app.get('/api/messages/:collection?/:id?', function(req, res, next) {
         sendJson(res, err, data);
     });
 });
+
+//  General purpose storage database
+app.get('/storage/:collection?/:id?', function(req, res, next) {
+    console.log(req.params);
+    storage.get(req.url, function(err, data) {
+        sendJson(res, err, data);
+    });
+});
+
+app.post('/storage/:collection/:id', function(req, res, next) {
+    console.log(req.params);
+    storage.post(req.url, req.body, function(err, data) {
+        sendJson(res, err, data);
+    });
+});
+
+
 
 /// ---------- WordPress MySql Database access
 app.get('/mysql/db/:command?', function(req, res, next) {

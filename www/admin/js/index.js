@@ -4,6 +4,7 @@
         obapi.connect('https://wp-websockets-potofcoffee2go.c9users.io');
 
         // Catch-all custom events (will not see connect/disconnect/etc.)
+        //  Handy for displaying stuff during debug
         obapi.on('*',function(event, msg) {
             console.log('***', event, '***', msg);
         });
@@ -25,6 +26,7 @@
             obapi.get('/api/auctions/auction');    // Get all auctions
             obapi.get('/api/auctions/user');       // Get all users
             obapi.get('/api/messages');            // Get all messages
+            obapi.get('/storage/admin');           // Get all general purpose collections
         });
 
         obapi.on('Get', function(msg) {

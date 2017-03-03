@@ -1,6 +1,7 @@
 (function () {
     "use strict";
-    var api  = require('./api.js');
+    const api  = require('./api.js'),
+       storage = require('./storage.js');
     
     var payload = function(resource, data, location, status, error) {
         return {
@@ -48,6 +49,20 @@
         // Is /api/:command/ request?
         if (resPath[1] === 'api' && typeof api[resPath[2]] === 'function') {
             api[resPath[2]](msg.resource, function(err, data) {
+                if (!err) {
+                    socket.emit('Get', payload(msg.resource, data, msg.resource, null, null));
+                }
+                else {
+                    console.log('onGet: ' + socket.id + ' server error ' + err.message);
+                    socket.emit('Get', 
+                        payload(msg.resource, {} ,null,
+                            {code:500, text: '500 - Internal Server Error'},
+                            {name: err.name, message: err.message}));
+                }
+            });
+        }
+        else if(resPath[1] === 'storage') {
+            storage.get(msg.resource, function(err, data) {
                 if (!err) {
                     socket.emit('Get', payload(msg.resource, data, msg.resource, null, null));
                 }

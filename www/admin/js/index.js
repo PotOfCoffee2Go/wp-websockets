@@ -26,7 +26,8 @@
             obapi.get('/api/auctions/auction');    // Get all auctions
             obapi.get('/api/auctions/user');       // Get all users
             obapi.get('/api/messages');            // Get all messages
-            obapi.get('/db/storage/admin');        // Get all general purpose collections
+            obapi.get('/db/storage/should work');        // Get all general purpose collections
+            obapi.put('/db/storage/should work/again three', {FromWebPage3: {from:'web', to:'page4'}});        // Get all general purpose collections
         });
 
         obapi.on('Get', function(msg) {
@@ -52,6 +53,14 @@
             }
         });
 
+        obapi.on('Put', function(msg) {
+            console.log(msg);
+        });
+        
+        obapi.on('Post', function(msg) {
+            console.log(msg);
+        });
+        
         $( "#about" ).click(function() {
             // console.log( "Handler for about .click() called." );
             var codeUrl = 'https://wp-websockets-potofcoffee2go.c9users.io/api/auctions/auction/a117';

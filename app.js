@@ -13,8 +13,8 @@ const
        storage = require('./routes/storage.js'),    // General purpose Database
          mysql = require('./routes/mysql.js'),      // WordPress Database access
   
-// Package and Server OS info  
-       sysInfo = require('./utils/sys-info');  // Package, Server OS, Node, NPM info
+// Package, Server OS, Node, NPM info
+       sysInfo = require('./utils/sys-info');
 
 
 /// HTTP and WebSocket stack
@@ -32,50 +32,41 @@ app.use(bodyParser.json());
 /// ---------- Routes 
 
 /// Version info
-app.get('/version', function(req, res, next) {  
-        sendJson(res, null, sysInfo.version());
-});
+app.get('/version', (req, res, next) => {sendJson(res, null, sysInfo.version());});
 
 /// ---------- Local Database Routes
 //  db/auctions database
-app.get('/api/auctions/:collection?/:id?/:objname?', function(req, res, next) {
+app.get('/api/auctions/:collection?/:id?/:objname?', (req, res, next) => {
     console.log(req.params);
-    api.auctions(req.url, function(err, data) {
-        sendJson(res, err, data);
-    });
+    api.auctions(req.url, (err, data) => {sendJson(res, err, data);});
 });
 
 //  db/messages database
-app.get('/api/messages/:collection?/:id?', function(req, res, next) {
+app.get('/api/messages/:collection?/:id?', (req, res, next) => {
     console.log(req.params);
-    api.messages(req.url, function(err, data) {
-        sendJson(res, err, data);
-    });
+    api.messages(req.url, (err, data) => {sendJson(res, err, data);});
 });
 
 //  General purpose storage database
-app.get('/db/storage/:collection?/:id?', function(req, res, next) {
+app.get('/db/storage/:collection?/:id?', (req, res, next) => {
     console.log(req.params);
-    storage.get(req.url, function(err, data) {
-        sendJson(res, err, data);
-    });
+    storage.get(req.url, (err, data) => {sendJson(res, err, data);});
 });
-
-app.post('/db/storage/:collection/:id', function(req, res, next) {
+app.put('/db/storage/:collection/:id?', (req, res, next) => {
     console.log(req.params);
-    storage.post(req.url, req.body, function(err, data) {
-        sendJson(res, err, data);
-    });
+    storage.put(req.url, req.body, (err, data) => {sendJson(res, err, data);});
+});
+app.post('/db/storage/:collection/:id?', (req, res, next) => {
+    console.log(req.params);
+    storage.post(req.url, req.body, (err, data) => {sendJson(res, err, data);});
 });
 
 
 
 /// ---------- WordPress MySql Database access
-app.get('/mysql/db/:command?', function(req, res, next) {
+app.get('/mysql/db/:command?', (req, res, next) => {
     console.log(req.params);
-    mysql.db(req.url, function(err, data) {
-        sendJson(res, err, data);
-    });
+    mysql.db(req.url, (err, data) => {sendJson(res, err, data);});
 });
 
 /// Helper to send JSON responses
@@ -92,10 +83,10 @@ function sendJson(res, err, data) {
 
 // For Cloud9 the port/ip is env.PORT and env.IP
 // For OpenShift the port/ip is env.OPENSHIFT_NODEJS_PORT and env.OPENSHIFT_NODEJS_IP
-server.listen( env.PORT || 3000, env.IP || 'localhost', function () {
+server.listen( env.PORT || 3000, env.IP || 'localhost', () => {
     /// ---------- WebSocket Server ----------
     // When a socket.io client connects - initialize it's message handlers
-    ios.on('connection', function (socket) {
+    ios.on('connection', (socket) => {
         sio.initMessageHandlers(socket);
     });
 

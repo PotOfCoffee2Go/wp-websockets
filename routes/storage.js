@@ -21,25 +21,66 @@
             var action = {
                 url: url,
                 cb: cb,
+                retCode: null,
                 urlparts: url.replace('/db/storage/','').split('/'),
                 resource: url.replace('/db/storage','')
             };
             queryDb(sdb.storageDb, action);
         },
-        post: function post(url, data, cb) {
+        put: function put(url, data, cb) {
             // Handle url terminating with a '/' by removing it
             if (url[url.length-1] === '/') url = url.substring(0, url.length-1);
-            var resource = url.replace('/db/storage','');
             var action = {
                 url: url,
                 cb: cb,
+                retCode: null,
                 urlparts: url.replace('/db/storage/','').split('/'),
                 resource: url.replace('/db/storage','')
             };
-            sdb.storageDb.push(action.resource, data);
+            
+            try {
+                sdb.storageDb.getData(action.resource);
+            }
+            catch(e) {
+                action.retCode = {code: 201, text: '201 - Created'};
+            }
+
+            try { // 'put' replaces the data - ('post' attempts to merge) 
+                sdb.storageDb.push(action.resource, data, true);
+            }
+            catch (e) {
+                if (cb) cb(e,{});
+                return;
+            }
+            queryDb(sdb.storageDb, action);
+        },
+        post: function post(url, data, cb) {
+            // Handle url terminating with a '/' by removing it
+            if (url[url.length-1] === '/') url = url.substring(0, url.length-1);
+            var action = {
+                url: url,
+                cb: cb,
+                retCode: null,
+                urlparts: url.replace('/db/storage/','').split('/'),
+                resource: url.replace('/db/storage','')
+            };
+            
+            try {
+                sdb.storageDb.getData(action.resource);
+            }
+            catch(e) { // Assume we will be creating the DB entry
+                action.retCode = {code: 201, text: '201 - Created'};
+            }
+
+            try { // 'post' attempts to merge the data - ('put' replaces)
+                sdb.storageDb.push(action.resource, data, false);
+            }
+            catch (e) {
+                if (cb) cb(e,{});
+                return;
+            }
             queryDb(sdb.storageDb, action);
         }
-
     };
     
     function queryDb(db, action) {
@@ -60,7 +101,7 @@
                 catch(error) {
                     err = error;
                 }
-            if (action.cb) action.cb(err, data);
+            if (action.cb) action.cb(err, data, action.retCode);
     }
 
 

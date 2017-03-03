@@ -61,7 +61,7 @@
                 }
             });
         }
-        else if(resPath[1] === 'db') {
+        else if(resPath[1] === 'db' && resPath[2] === 'storage') {
             storage.get(msg.resource, function(err, data) {
                 if (!err) {
                     socket.emit('Get', payload(msg.resource, data, msg.resource, null, null));
@@ -84,8 +84,79 @@
         }
     }
 
-    function onPost(socket, msg) {}
-    function onPut(socket, msg) {}
+    function onPut(socket, msg) {
+        if (typeof msg.resource !== 'string') {
+            console.log('onPut: ' + socket.id + ' Missing field (resource)');
+            socket.emit('Put',
+                payload(msg.resource, {} ,null,
+                    {code:400, text: '400 - Bad Request - Missing field (resource)'},
+                    {name:'RestError', message:'400 - Bad Request - Missing field (resource)'}));
+            return;
+        }
+        
+        var resPath = msg.resource.split('/');
+        if(resPath[1] === 'db' && resPath[2] === 'storage') {
+            storage.put(msg.resource, msg.data, function(err, data, retCode) {
+                retCode = retCode || null;
+                if (!err) {
+                    socket.emit('Put', payload(msg.resource, data, msg.resource, retCode, null));
+                }
+                else {
+                    console.log('onPut: ' + socket.id + ' server error ' + err.message);
+                    socket.emit('Put', 
+                        payload(msg.resource, {} ,null,
+                            {code:400, text: '400 - Bad Request'},
+                            {name: err.name, message: err.message}));
+                }
+            });
+        }
+        else {
+            console.log('onPut: ' + socket.id + ' resource ' + msg.resource + ' not found ');
+            socket.emit('Put', 
+                payload(msg.resource, {} ,null,
+                    {code:404, text: '404 - Not Found'},
+                    {name:'RestError', message:'404 - Not Found'}));
+        }
+    }
+    
+    function onPost(socket, msg) {
+        if (typeof msg.resource !== 'string') {
+            console.log('onPost: ' + socket.id + ' Missing field (resource)');
+            socket.emit('Post',
+                payload(msg.resource, {} ,null,
+                    {code:400, text: '400 - Bad Request - Missing field (resource)'},
+                    {name:'RestError', message:'400 - Bad Request - Missing field (resource)'}));
+            return;
+        }
+        
+        var resPath = msg.resource.split('/');
+        if(resPath[1] === 'db' && resPath[2] === 'storage') {
+            storage.post(msg.resource, msg.data, function(err, data, retCode) {
+                retCode = retCode || null;
+                if (!err) {
+                    socket.emit('Post', payload(msg.resource, data, msg.resource, retCode, null));
+                }
+                else {
+                    console.log('onPost: ' + socket.id + ' server error ' + err.message);
+                    socket.emit('Post', 
+                        payload(msg.resource, {} ,null,
+                            {code:400, text: '400 - Bad Request'},
+                            {name: err.name, message: err.message}));
+                }
+            });
+        }
+        else {
+            console.log('onPost: ' + socket.id + ' resource ' + msg.resource + ' not found ');
+            socket.emit('Post', 
+                payload(msg.resource, {} ,null,
+                    {code:404, text: '404 - Not Found'},
+                    {name:'RestError', message:'404 - Not Found'}));
+        }
+    }
+    
+    
+    
+    
     function onPatch(socket, msg) {}
     function onDelete(socket, msg) {}
 

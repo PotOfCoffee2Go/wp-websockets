@@ -26,12 +26,12 @@
             obapi.get('/api/auctions/auction');    // Get all auctions
             obapi.get('/api/auctions/user');       // Get all users
             obapi.get('/api/messages');            // Get all messages
-            obapi.get('/storage/admin');           // Get all general purpose collections
+            obapi.get('/db/storage/admin');        // Get all general purpose collections
         });
 
         obapi.on('Get', function(msg) {
             // List of auctions? Populate #auction-items
-            if (msg.location.indexOf('/api/auctions/auction') === 0) { 
+            if (msg.location && msg.location.indexOf('/api/auctions/auction') === 0) { 
                 $('#auction-items').html('');
                 var auctionsTemplate = Handlebars.compile($('#auction-item-template').html());
                 Object.keys(msg.data.auction).forEach(function(item) {
@@ -39,7 +39,7 @@
                 });
             }
             // List of users?  Populate #users-info
-            else if (msg.location.indexOf('/api/auctions/user') === 0) {
+            else if (msg.location && msg.location.indexOf('/api/auctions/user') === 0) {
                 $('#users-info').html('');
                 var usersTemplate = Handlebars.compile($('#users-info-template').html());
                 Object.keys(msg.data.user).forEach(function(user) {

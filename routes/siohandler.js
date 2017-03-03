@@ -61,7 +61,7 @@
                 }
             });
         }
-        else if(resPath[1] === 'storage') {
+        else if(resPath[1] === 'db') {
             storage.get(msg.resource, function(err, data) {
                 if (!err) {
                     socket.emit('Get', payload(msg.resource, data, msg.resource, null, null));
@@ -84,7 +84,34 @@
         }
     }
 
-    var msg = module.exports = {
+    function onPost(socket, msg) {}
+    function onPut(socket, msg) {}
+    function onPatch(socket, msg) {}
+    function onDelete(socket, msg) {}
+
+    /// #### Standard Events
+    function emitConnected(socket) {
+        // Send connected
+        socket.emit('Connected', payload('/', {},'/',null,null));
+    }
+
+    /// #### Custom Events
+    /// - A bid has been updated so broadcast to all others in the room
+    function onUpdateBid(socket, msg) {
+        if (msg.room) {
+            msg.received = new Date().toISOString();
+            if (msg.data && msg.data.auction_id && msg.data.auc_url) {
+                msg.data.auc_url += ('?ult_auc_id=' + msg.data.auction_id);
+            }
+            socket.broadcast.to(msg.room).emit('reload', msg);
+            msg.broadcast = new Date().toISOString();
+            api.messageDb.push('/bids/' + msg.room + '[]', {updatebid: msg});
+            console.log('onUpdateBid: broadcast - ' + JSON.stringify(msg));
+        }
+        console.log('onUpdateBid: %s',JSON.stringify(msg));
+    }
+
+    module.exports = {
 
         initMessageHandlers: function initMessageHandlers(socket) {
             /// #### Standard Messages
@@ -93,38 +120,17 @@
             socket.on('Leave', function(message) {onLeave(socket, message);});
 
             socket.on('Get', function(message) {onGet(socket, message);});
-            socket.on('Post', function(message) {msg.onPost(socket, message);});
-            socket.on('Put', function(message) {msg.onPut(socket, message);});
-            socket.on('Patch', function(message) {msg.onPatch(socket, message);});
-            socket.on('Delete', function(message) {msg.onDelete(socket, message);});
+            socket.on('Post', function(message) {onPost(socket, message);});
+            socket.on('Put', function(message) {onPut(socket, message);});
+            socket.on('Patch', function(message) {onPatch(socket, message);});
+            socket.on('Delete', function(message) {onDelete(socket, message);});
 
-            socket.on('update bid', function(message) {msg.onUpdateBid(socket, message);});
+            socket.on('update bid', function(message) {onUpdateBid(socket, message);});
 
             // - Send a 'Connected' message back to the client
-            msg.emitConnected(socket);
-        },
-    
-        /// #### Standard Events
-        emitConnected: function emitConnected(socket) {
-            // Send connected
-            socket.emit('Connected', payload('/', {},'/',null,null));
-        },
-
-        /// #### Custom Events
-        /// - A bid has been updated so broadcast to all others in the room
-        onUpdateBid: function onUpdateBid(socket, msg) {
-            if (msg.room) {
-                msg.received = new Date().toISOString();
-                if (msg.data && msg.data.auction_id && msg.data.auc_url) {
-                    msg.data.auc_url += ('?ult_auc_id=' + msg.data.auction_id);
-                }
-                socket.broadcast.to(msg.room).emit('reload', msg);
-                msg.broadcast = new Date().toISOString();
-                api.messageDb.push('/bids/' + msg.room + '[]', {updatebid: msg});
-                console.log('onUpdateBid: broadcast - ' + JSON.stringify(msg));
-            }
-            console.log('onUpdateBid: %s',JSON.stringify(msg));
+            emitConnected(socket);
         }
-
     };
+    
+
 })();

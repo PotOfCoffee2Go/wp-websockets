@@ -104,10 +104,10 @@
                     <div class="caption">
                         <h3>{{post.post_title}}</h3>
                         <p>{{post.post_content}}</p>
-                        <p>Status: {{categories.0.name}}</p>
+                        <p>a{{post.ID}} Status: {{categories.0.name}}</p>
                         <p>
-                            <a onClick="poc2go.auctionClick(\'a{{post.ID}}\');"  href="#" class="btn btn-primary">Auction!</a> 
-                            <a onClick="poc2go.moreInfoClick(\'a{{post.ID}}\');" href="#" class="btn btn-default">More Info</a>
+                            <a onClick="obapi.auctionClick(\'a{{post.ID}}\');"  href="#" class="btn btn-primary">Auction!</a> 
+                            <a onClick="obapi.moreInfoClick(\'a{{post.ID}}\');" href="#" class="btn btn-default">More Info</a>
                         </p>
                     </div>
                 </div>

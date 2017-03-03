@@ -16,28 +16,28 @@
             // Handle url terminating with a '/' by removing it
             if (url[url.length-1] === '/') url = url.substring(0, url.length-1);
             // Edge case where a complete database being requested
-            if (url === '/storage') url = '/storage/';
+            if (url === '/db/storage') url = '/db/storage/';
             
             var action = {
                 url: url,
                 cb: cb,
-                urlparts: url.replace('/storage/','').split('/'),
-                resource: url.replace('/storage','')
+                urlparts: url.replace('/db/storage/','').split('/'),
+                resource: url.replace('/db/storage','')
             };
             queryDb(sdb.storageDb, action);
         },
         post: function post(url, data, cb) {
             // Handle url terminating with a '/' by removing it
             if (url[url.length-1] === '/') url = url.substring(0, url.length-1);
-
+            var resource = url.replace('/db/storage','');
             var action = {
                 url: url,
                 cb: cb,
-                urlparts: url.replace('/storage/','').split('/'),
-                resource: url.replace('/storage','')
+                urlparts: url.replace('/db/storage/','').split('/'),
+                resource: url.replace('/db/storage','')
             };
             sdb.storageDb.push(action.resource, data);
-            if (cb) cb(null, {result: 'Done!!'});
+            queryDb(sdb.storageDb, action);
         }
 
     };

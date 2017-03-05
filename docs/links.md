@@ -68,3 +68,4 @@ $.getJSON( host + '/api/auctions/user/u1', function( auctions ) {
     alert('User u1 is: ' + auctions.user.u1.display_name);
 }
 ```
+

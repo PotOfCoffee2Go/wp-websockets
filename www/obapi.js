@@ -9,8 +9,8 @@ var obapi = obapi || {};
     ns.connect = function obapi_connect(url) {
 
         if (typeof io === 'undefined') {
-            throw new Error('Script socket.js must be loaded for WebSockets to work');
-            // <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.js"></script>
+            throw new Error('Script socket.io.js must be loaded for WebSockets to work');
+            // <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
         }
 
         // Connect to server and get our socket
@@ -19,8 +19,8 @@ var obapi = obapi || {};
         ns.on = function(event, listener) {ns.socket.on(event, listener); };
         ns.off = function(event, listener) { ns.socket.removeListener(event, listener); };
         
-        // Implement catch-all for custom messages
-        //  only catches custom events
+        // Implement Catch-all -wildcard(*) feature- for obapi custom messages
+        //  only catches obapi custom events (not regular socket.io events)
         //  http://stackoverflow.com/questions/10405070/socket-io-client-respond-to-all-events-with-one-handler
         var onevent = ns.socket.onevent;
         ns.socket.onevent = function (packet) {
@@ -29,17 +29,22 @@ var obapi = obapi || {};
             packet.data = ["*"].concat(args);
             onevent.call(this, packet);         // additional call to catch-all
         };
-        /* Usage of Catch-all custom events
+        /* Usage of Catch-all obapi custom events
         obapi.on('*',function(event, msg) {
             console.log('***', event, msg);
         });
         */
         
-        // Emit message to the server
-        ns.emit = function obapi_emit(message, payload) {
-            ns.socket.emit(message, payload);
-        };
-        
+        /// Custom socket.io events
+        /*
+        All obapi custom socket.io emits and on events contain :
+        {
+            resource: 'the resource (or path) requested',
+            data: object {} containing the data to emit(), or on() event is data returned,
+            location: 'the resource (or path) actually retrieved',
+            error: {name and message of error } or null if no error
+        }
+        */
         var payload = function(resource, data) {
             return {
                 resource: resource,
@@ -47,28 +52,20 @@ var obapi = obapi || {};
                 location: null,
                 error: null };
         };
+
+        // Emit message to the server
+        ns.emit = function obapi_emit(message, payload) {
+            ns.socket.emit(message, payload);
+        };
         
-        ns.join = function obapi_join(resource) {
-            ns.emit('Join', payload(resource));
-        };
-        ns.leave = function obapi_leave(resource) {
-            ns.emit('Leave', payload(resource));
-        };
-        ns.get = function obapi_get(resource) {
-            ns.emit('Get', payload(resource));
-        };
-        ns.post = function obapi_post(resource, data) {
-            ns.emit('Post', payload(resource, data));
-        };
-        ns.put = function obapi_put(resource, data) {
-            ns.emit('Put', payload(resource, data));
-        };
-        ns.patch = function obapi_patch(resource, data) {
-            ns.emit('Patch', payload(resource, data));
-        };
-        ns.delete = function obapi_delete(resource) {
-            ns.emit('Delete', payload(resource));
-        };
+
+        ns.watch = function obapi_watch(resource) {ns.emit('Watch', payload(resource));};
+        ns.unwatch = function obapi_unwatch(resource) {ns.emit('Unwatch', payload(resource));};
+        ns.get = function obapi_get(resource) {ns.emit('Get', payload(resource));};
+        ns.post = function obapi_post(resource, data) {ns.emit('Post', payload(resource, data));};
+        ns.put = function obapi_put(resource, data) {ns.emit('Put', payload(resource, data));};
+        ns.patch = function obapi_patch(resource, data) {ns.emit('Patch', payload(resource, data));};
+        ns.delete = function obapi_delete(resource) {ns.emit('Delete', payload(resource));};
 
     };
 })(obapi);

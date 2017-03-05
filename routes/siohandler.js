@@ -12,25 +12,25 @@
             error: error ? error : null };
     };
 
-    /// - Got Join request from client
-    function onJoin(socket, msg) {
+    /// - Got Watch request from client
+    function onWatch(socket, msg) {
         if (msg.resource) {
             socket.join(msg.resource);
-            console.log('onJoin: ' + socket.id + ' joined resource - ' + msg.resource);
+            console.log('onWatch: ' + socket.id + ' joined resource - ' + msg.resource);
         }
         else {
-            console.log('onJoin: ' + socket.id + ' resource to join was not specified');
+            console.log('onWatch: ' + socket.id + ' resource to join was not specified');
         }
     }
 
-    /// - Got Leave request from client
-    function onLeave(socket, msg) {
+    /// - Got Unwat request from client
+    function onUnwatch(socket, msg) {
         if (msg.resource) {
             socket.leave(msg.resource);
-            console.log('onLeave: ' + socket.id + ' left resource - ' + msg.resource);
+            console.log('onUnwatch: ' + socket.id + ' left resource - ' + msg.resource);
         }
         else {
-            console.log('onLeave: ' + socket.id + ' resource to leave was not specified ');
+            console.log('onUnwatch: ' + socket.id + ' resource to leave was not specified ');
         }
     }
 
@@ -184,19 +184,19 @@
 
     module.exports = {
 
-        initMessageHandlers: function initMessageHandlers(socket) {
+        init: function init(socket) {
             /// #### Standard Messages
-            socket.on('disconnect', function() {console.log('onDisconnect: ' + socket.id);});
-            socket.on('Join', function(message) {onJoin(socket, message);});
-            socket.on('Leave', function(message) {onLeave(socket, message);});
+            socket.on('disconnect', () => {console.log('onDisconnect: ' + socket.id);});
+            socket.on('Watch', (message) => {onWatch(socket, message);});
+            socket.on('Unwatch', (message) => {onUnwatch(socket, message);});
 
-            socket.on('Get', function(message) {onGet(socket, message);});
-            socket.on('Post', function(message) {onPost(socket, message);});
-            socket.on('Put', function(message) {onPut(socket, message);});
-            socket.on('Patch', function(message) {onPatch(socket, message);});
-            socket.on('Delete', function(message) {onDelete(socket, message);});
+            socket.on('Get', (message) => {onGet(socket, message);});
+            socket.on('Post', (message) => {onPost(socket, message);});
+            socket.on('Put', (message) => {onPut(socket, message);});
+            socket.on('Patch', (message) => {onPatch(socket, message);});
+            socket.on('Delete', (message) => {onDelete(socket, message);});
 
-            socket.on('update bid', function(message) {onUpdateBid(socket, message);});
+            socket.on('update bid', (message) => {onUpdateBid(socket, message);});
 
             // - Send a 'Connected' message back to the client
             emitConnected(socket);

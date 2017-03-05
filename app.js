@@ -21,11 +21,12 @@ const
 var
 express = require('express'),  
     app = express(),  
- server = require('http').createServer(app), 
+ server = require('http').Server(app), 
     ios = require('socket.io')(server);
 
 /// Frontend(s) html, js, stylesheet, etc
 app.use(express.static(__dirname + '/www'));
+
 /// JSON body parser
 app.use(bodyParser.json());
 
@@ -85,10 +86,9 @@ function sendJson(res, err, data) {
 // For OpenShift the port/ip is env.OPENSHIFT_NODEJS_PORT and env.OPENSHIFT_NODEJS_IP
 server.listen( env.PORT || 3000, env.IP || 'localhost', () => {
     /// ---------- WebSocket Server ----------
-    // When a socket.io client connects - initialize it's message handlers
-    ios.on('connection', (socket) => {
-        sio.initMessageHandlers(socket);
-    });
+    // When a socket.io client connects
+    //   initialize it's server-side message handlers
+    ios.on('connection', (socket) => {sio.init(socket);});
 
     console.log('Application worker %s started...', process.pid);
 });

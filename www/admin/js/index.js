@@ -3,7 +3,8 @@
     
         obapi.connect('https://wp-websockets-potofcoffee2go.c9users.io');
 
-        // Catch-all custom events (will not see connect/disconnect/etc.)
+        // Catch-all obapi custom websocket events
+        //  (will not see regular socket.io connect/disconnect/etc events)
         //  Handy for displaying stuff during debug
         obapi.on('*',function(event, msg) {
             console.log('***', event, '***', msg);
@@ -20,6 +21,16 @@
         });
 
         /// Custom socket.io events
+        /*
+        All custom socket.io events contain :
+        {
+            resource: 'the resource (or path) requested',
+            data: object {} containing the data requested,
+            location: 'the resource (or path) actually retrieved',
+            error: {name and message of error } or null if no error
+        }
+        */
+
         //  Connection accepted
         obapi.on('Connected', function(msg) {
             console.log('Connected to auction server');
@@ -31,20 +42,20 @@
         });
 
         obapi.on('Get', function(msg) {
-            // List of auctions? Populate #auction-items
-            if (msg.location && msg.location.indexOf('/api/auctions/auction') === 0) { 
-                $('#auction-items').html('');
-                var auctionsTemplate = Handlebars.compile($('#auction-item-template').html());
-                Object.keys(msg.data.auction).forEach(function(item) {
-                    $('#auction-items').append(auctionsTemplate(msg.data.auction[item]));
-                });
-            }
             // List of users?  Populate #users-info
-            else if (msg.location && msg.location.indexOf('/api/auctions/user') === 0) {
+            if (msg.location && msg.location.indexOf('/api/auctions/user') === 0) {
                 $('#users-info').html('');
                 var usersTemplate = Handlebars.compile($('#users-info-template').html());
                 Object.keys(msg.data.user).forEach(function(user) {
                     $('#users-info').append(usersTemplate(msg.data.user[user]));
+                });
+            }
+            // List of auctions? Populate #auction-items
+            else if (msg.location && msg.location.indexOf('/api/auctions/auction') === 0) { 
+                $('#auction-items').html('');
+                var auctionsTemplate = Handlebars.compile($('#auction-item-template').html());
+                Object.keys(msg.data.auction).forEach(function(item) {
+                    $('#auction-items').append(auctionsTemplate(msg.data.auction[item]));
                 });
             }
 

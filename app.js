@@ -33,7 +33,7 @@ app.use(bodyParser.json());
 /// ---------- Routes 
 
 /// health for openshift
-app.get('/health', (req, res, next) => {sendJson(res, null, {health:'ok'});});
+app.get('/health', (req, res, next) => {sendJson(res, null, {'health':'ok'});});
 
 /// Version info
 app.get('/version', (req, res, next) => {sendJson(res, null, sysInfo.version());});

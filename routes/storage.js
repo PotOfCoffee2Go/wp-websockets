@@ -1,7 +1,7 @@
 (function () {
     "use strict";
     var   fs        = require('fs'),
-          cfg       = require('../utils/config.js'),
+          cfg       = require('../../data/config.js'),
           JsonDB    = require('node-json-db');
           
     // Create/Open database

@@ -3,7 +3,7 @@
     "use strict";
     const mysql  = require('mysql'),
           async  = require('async'),
-          cfg    = require('../utils/config.js'),
+          cfg    = require('../../data/config.js'),
           api    = require('./api.js');
 
 

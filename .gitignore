@@ -4,6 +4,7 @@ logs
 *.log
 flotsam
 db
+utils/config.js
 
 # Runtime data
 pids

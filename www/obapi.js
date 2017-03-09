@@ -59,13 +59,13 @@ var obapi = obapi || {};
         };
         
 
-        ns.watch = function obapi_watch(resource) {ns.emit('Watch', payload(resource));};
-        ns.unwatch = function obapi_unwatch(resource) {ns.emit('Unwatch', payload(resource));};
         ns.get = function obapi_get(resource) {ns.emit('Get', payload(resource));};
         ns.post = function obapi_post(resource, data) {ns.emit('Post', payload(resource, data));};
         ns.put = function obapi_put(resource, data) {ns.emit('Put', payload(resource, data));};
         ns.patch = function obapi_patch(resource, data) {ns.emit('Patch', payload(resource, data));};
         ns.delete = function obapi_delete(resource) {ns.emit('Delete', payload(resource));};
+        ns.watch = function obapi_watch(resource) {ns.emit('Watch', payload(resource));};
+        ns.unwatch = function obapi_unwatch(resource) {ns.emit('Unwatch', payload(resource));};
 
     };
 })(obapi);

@@ -32,6 +32,9 @@ app.use(bodyParser.json());
 
 /// ---------- Routes 
 
+/// health for openshift
+app.get('/health', (req, res, next) => {sendJson(res, null, {health:'ok'});});
+
 /// Version info
 app.get('/version', (req, res, next) => {sendJson(res, null, sysInfo.version());});
 
@@ -84,12 +87,17 @@ function sendJson(res, err, data) {
 
 // For Cloud9 the port/ip is env.PORT and env.IP
 // For OpenShift the port/ip is env.OPENSHIFT_NODEJS_PORT and env.OPENSHIFT_NODEJS_IP
-server.listen( env.PORT || 3000, env.IP || 'localhost', () => {
-    /// ---------- WebSocket Server ----------
-    // When a socket.io client connects
-    //   initialize it's server-side message handlers
-    ios.on('connection', (socket) => {sio.init(socket);});
-
-    console.log('Application worker %s started...', process.pid);
-});
+//server.listen( env.OPENSHIFT_NODEJS_PORT || 3000, env.OPENSHIFT_NODEJS_IP || 'localhost', () => {
+server.listen(
+    env.OPENSHIFT_NODEJS_PORT || env.PORT || 3000,
+    env.OPENSHIFT_NODEJS_IP || env.IP || 'localhost',
+    () => {
+        /// ---------- WebSocket Server ----------
+        // When a socket.io client connects
+        //   initialize it's server-side message handlers
+        ios.on('connection', (socket) => {sio.init(socket);});
+    
+        console.log('Application worker %s started...', process.pid);
+    }
+);
 

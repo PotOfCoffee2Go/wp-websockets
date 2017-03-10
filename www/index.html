@@ -56,12 +56,15 @@
   </div>
   <hr />
     <h3>Web Sockets</h3>
-    <p>In these sniplets I am using the BootStrap framework to layout the page and HandleBars to inject the data</p>
-    <p>For the complete web directory of the example page go to <a href="https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/example" target="_blank">https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/example</a></p>
+    <p>The sniplets below will to give you an idea of how to use the Onyx &amp; Breezy Auction API via Web Sockets. The advantage of Web Sockets (<a href="https://socket.io/" target="_blank">socket.io</a>) is the ability to 'watch' an auction item and you will be notified via an 'on()' event whenever the bid price changes.</p>
+    <p>For the example, the page layout uses <a href="http://getbootstrap.com/" target="_blank">BootStrap</a> framework using a free (but modified) BootStrap template <a href="https://startbootstrap.com/template-overviews/heroic-features/" target="_blank">Heroic Template</a> from <a href="https://startbootstrap.com/" target="_blank">StartBootStrap</a>
+    The data is injected onto the page using <a href="http://handlebarsjs.com/" target="_blank">HandleBars</a>. Of course, you might be using a totally different Framework and Rendering system, but the theory is the same.</p>
     <p></p>
-    <p>To see the page in action <a href="https://obauction-potofcoffee2go.rhcloud.com/example" target="_blank">https://obauction-potofcoffee2go.rhcloud.com/example</a></p>
+    <p>For the complete web directory of the example page go to <a href="https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/example" target="_blank">https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/example</a> which you can download and place into your Apache L(W)AMP, nodejs (http/express), or just about any web server's public directory.</p>
     <p></p>
-    <p>In your web page .html put something like this :</p>
+    <p>To see the page in action go to <a href="https://obauction-potofcoffee2go.rhcloud.com/example" target="_blank">https://obauction-potofcoffee2go.rhcloud.com/example</a></p>
+    <p></p>
+    <p>So let's get started! In your web page .html put something like this :</p>
     
     
 <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1

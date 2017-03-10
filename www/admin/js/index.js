@@ -1,7 +1,8 @@
     'use strict';
     $(function() {/* global $ obapi Handlebars */
     
-        obapi.connect('https://wp-websockets-potofcoffee2go.c9users.io');
+        // obapi.connect('https://wp-websockets-potofcoffee2go.c9users.io');
+        obapi.connect('https://obauction-potofcoffee2go.rhcloud.com');
 
         // Catch-all obapi custom websocket events
         //  (will not see regular socket.io connect/disconnect/etc events)

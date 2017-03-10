@@ -32,7 +32,6 @@
         }
         */
 
-        // Got a response to a obapi.get() request
         //  Connection accepted - so send a buncha requests
         obapi.on('Connected', function(msg) {
             console.log('Connected to auction server');
@@ -45,6 +44,7 @@
             obapi.get('/db/storage/myFrontEndStorage'); // Get all general purpose collections
         });
 
+        // Got a response to a obapi.get() request
         // I use the 'location' but could use 'resource' instead - (identical unless redirected)
         //  However: 'location' is null if there was an error
         obapi.on('Get', function(msg) {

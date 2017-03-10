@@ -58,7 +58,9 @@
     <h3>Web Sockets</h3>
     <p>In these sniplets I am using the BootStrap framework to layout the page and HandleBars to inject the data</p>
     <p>For the complete web directory of the example page go to <a href="https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/example" target="_blank">https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/example</a></p>
-
+    <p></p>
+    <p>To see the page in action <a href="https://obauction-potofcoffee2go.rhcloud.com/example" target="_blank">https://obauction-potofcoffee2go.rhcloud.com/example</a></p>
+    <p></p>
     <p>In your web page .html put something like this :</p>
     
     
@@ -245,7 +247,6 @@
 <span style="color: #aaaaaa; font-style: italic">        }</span>
 <span style="color: #aaaaaa; font-style: italic">        */</span>
 
-        <span style="color: #aaaaaa; font-style: italic">// Got a response to a obapi.get() request</span>
         <span style="color: #aaaaaa; font-style: italic">//  Connection accepted - so send a buncha requests</span>
         obapi.on(<span style="color: #aa5500">&#39;Connected&#39;</span>, <span style="color: #0000aa">function</span>(msg) {
             console.log(<span style="color: #aa5500">&#39;Connected to auction server&#39;</span>);
@@ -258,6 +259,7 @@
             obapi.get(<span style="color: #aa5500">&#39;/db/storage/myFrontEndStorage&#39;</span>); <span style="color: #aaaaaa; font-style: italic">// Get all general purpose collections</span>
         });
 
+        <span style="color: #aaaaaa; font-style: italic">// Got a response to a obapi.get() request</span>
         <span style="color: #aaaaaa; font-style: italic">// I use the &#39;location&#39; but could use &#39;resource&#39; instead - (identical unless redirected)</span>
         <span style="color: #aaaaaa; font-style: italic">//  However: &#39;location&#39; is null if there was an error</span>
         obapi.on(<span style="color: #aa5500">&#39;Get&#39;</span>, <span style="color: #0000aa">function</span>(msg) {

@@ -20,6 +20,7 @@
 </div>
   
 <div class="container">
+  <h3>REST</h3>
   <div class="row">
     <div class="col-md-2">
       Get all auctions
@@ -53,6 +54,250 @@
       <p><a href="https://obauction-potofcoffee2go.rhcloud.com/api/auctions/user/u1" target="_blank">https://obauction-potofcoffee2go.rhcloud.com/api/auctions/user/u1</a></p>
     </div>
   </div>
+  <hr />
+    <h3>Web Sockets</h3>
+    <p>In these sniplets I am using the BootStrap framework to layout the page and HandleBars to inject the data</p>
+    <p>For the complete web directory of the example page go to <a href="https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/admin" target="_blank">https://github.com/PotOfCoffee2Go/wp-websockets/tree/master/www/admin</a></p>
+
+    <p>In your web page .html put something like this :</p>
+    
+    
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #1e90ff; font-weight: bold">&lt;head&gt;</span>
+    <span style="color: #aaaaaa; font-style: italic">&lt;!--- Stuff you already have in the head section --&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- Bootstrap Core CSS --&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;link</span> <span style="color: #1e90ff">rel=</span><span style="color: #aa5500">&quot;stylesheet&quot;</span> <span style="color: #1e90ff">href=</span><span style="color: #aa5500">&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;</span>
+
+<span style="color: #1e90ff; font-weight: bold">&lt;head&gt;</span>
+
+<span style="color: #1e90ff; font-weight: bold">&lt;body&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!--- Stuff you already have in the body section --&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- jQuery library --&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;script </span><span style="color: #1e90ff">src=</span><span style="color: #aa5500">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;&lt;/script&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- Bootstrap Core --&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;script </span><span style="color: #1e90ff">src=</span><span style="color: #aa5500">&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;&lt;/script&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- WebSockets connection to auction server --&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;script </span><span style="color: #1e90ff">src=</span><span style="color: #aa5500">&quot;https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;&lt;/script&gt;</span>
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- API to Onyx &amp; Breezy auction server --&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;script </span><span style="color: #1e90ff">src=</span><span style="color: #aa5500">&quot;https://obauction-potofcoffee2go.rhcloud.com/obapi.js&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;&lt;/script&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- HandleBars --&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;script </span><span style="color: #1e90ff">src=</span><span style="color: #aa5500">&quot;//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;&lt;/script&gt;</span>
+
+    <span style="color: #aaaaaa; font-style: italic">&lt;!-- Page scripts--&gt;</span>
+    <span style="color: #1e90ff; font-weight: bold">&lt;script </span><span style="color: #1e90ff">src=</span><span style="color: #aa5500">&quot;js/index.js&quot;</span><span style="color: #1e90ff; font-weight: bold">&gt;&lt;/script&gt;</span>
+
+<span style="color: #1e90ff; font-weight: bold">&lt;/body&gt;</span>
+</pre></td></tr></table></div>
+
+<p>The important stuff is lines 20, 22, and 28. </p>
+<p>They call in the socket.io library and the Onyx &amp; Breezy Auction API </p>
+<p></p>
+<p>The /js/index.js file at line 28 implements the get,put,post,patch,delete,watch, and unwatch calls and callbacks of the Onyx &amp; Breezy API.</p>
+<p></p>
+<p></p>
+<p></p>
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83</pre></td><td><pre style="margin: 0; line-height: 125%">    <span style="color: #aa5500">&#39;use strict&#39;</span>;
+    $(<span style="color: #0000aa">function</span>() {<span style="color: #aaaaaa; font-style: italic">/* global $ obapi Handlebars */</span>
+    
+        obapi.connect(<span style="color: #aa5500">&#39;https://obauction-potofcoffee2go.rhcloud.com&#39;</span>);
+
+        <span style="color: #aaaaaa; font-style: italic">// Catch-all obapi custom websocket events</span>
+        <span style="color: #aaaaaa; font-style: italic">//  (will not see regular socket.io connect/disconnect/etc events)</span>
+        <span style="color: #aaaaaa; font-style: italic">//  Handy for displaying stuff during debug</span>
+        obapi.on(<span style="color: #aa5500">&#39;*&#39;</span>,<span style="color: #0000aa">function</span>(event, msg) {
+            console.log(<span style="color: #aa5500">&#39;***&#39;</span>, event, <span style="color: #aa5500">&#39;***&#39;</span>, msg);
+        });
+
+        <span style="color: #aaaaaa; font-style: italic">/// Standard socket.io events</span>
+        <span style="color: #aaaaaa; font-style: italic">//  socket.io connect</span>
+        obapi.on(<span style="color: #aa5500">&#39;connect&#39;</span>, <span style="color: #0000aa">function</span>() {
+            console.log(<span style="color: #aa5500">&#39;Established WebSocket connection to auction server&#39;</span>);
+        });
+        <span style="color: #aaaaaa; font-style: italic">//  socket.io disconnect</span>
+        obapi.on(<span style="color: #aa5500">&#39;disconnect&#39;</span>, <span style="color: #0000aa">function</span>() {
+            console.log(<span style="color: #aa5500">&#39;WebSocket disconnected from auction server&#39;</span>);
+        });
+
+        <span style="color: #aaaaaa; font-style: italic">/// Custom socket.io events</span>
+        <span style="color: #aaaaaa; font-style: italic">/*</span>
+<span style="color: #aaaaaa; font-style: italic">        All custom socket.io events contain :</span>
+<span style="color: #aaaaaa; font-style: italic">        {</span>
+<span style="color: #aaaaaa; font-style: italic">            resource: &#39;the resource (or path) requested&#39;,</span>
+<span style="color: #aaaaaa; font-style: italic">            data: object {} containing the data requested,</span>
+<span style="color: #aaaaaa; font-style: italic">            location: &#39;the resource (or path) actually retrieved&#39;,</span>
+<span style="color: #aaaaaa; font-style: italic">            error: {name and message of error } or null if no error</span>
+<span style="color: #aaaaaa; font-style: italic">        }</span>
+<span style="color: #aaaaaa; font-style: italic">        */</span>
+
+        <span style="color: #aaaaaa; font-style: italic">// Got a response to a obapi.get() request</span>
+        <span style="color: #aaaaaa; font-style: italic">//  Connection accepted - so send a buncha requests</span>
+        obapi.on(<span style="color: #aa5500">&#39;Connected&#39;</span>, <span style="color: #0000aa">function</span>(msg) {
+            console.log(<span style="color: #aa5500">&#39;Connected to auction server&#39;</span>);
+            obapi.get(<span style="color: #aa5500">&#39;/api/auctions/auction&#39;</span>);    <span style="color: #aaaaaa; font-style: italic">// Get all auctions</span>
+            obapi.get(<span style="color: #aa5500">&#39;/api/auctions/user&#39;</span>);       <span style="color: #aaaaaa; font-style: italic">// Get all users</span>
+            obapi.get(<span style="color: #aa5500">&#39;/api/messages&#39;</span>);            <span style="color: #aaaaaa; font-style: italic">// Get all messages</span>
+            
+            <span style="color: #aaaaaa; font-style: italic">// Put some general purpose data into data storage on the server</span>
+            obapi.put(<span style="color: #aa5500">&#39;/db/storage/myFrontEndStorage&#39;</span>, {FromWebPage3: {somedata:<span style="color: #aa5500">&#39;web&#39;</span>, otherdata:<span style="color: #aa5500">&#39;page4&#39;</span>}});        <span style="color: #aaaaaa; font-style: italic">// Get all general purpose collections</span>
+            obapi.get(<span style="color: #aa5500">&#39;/db/storage/myFrontEndStorage&#39;</span>); <span style="color: #aaaaaa; font-style: italic">// Get all general purpose collections</span>
+        });
+
+        <span style="color: #aaaaaa; font-style: italic">// I use the &#39;location&#39; but could use &#39;resource&#39; instead - (identical unless redirected)</span>
+        <span style="color: #aaaaaa; font-style: italic">//  However: &#39;location&#39; is null if there was an error</span>
+        obapi.on(<span style="color: #aa5500">&#39;Get&#39;</span>, <span style="color: #0000aa">function</span>(msg) {
+            <span style="color: #aaaaaa; font-style: italic">// List of users?  Use HandleBars to populate #users-info</span>
+            <span style="color: #0000aa">if</span> (msg.location &amp;&amp; msg.location.indexOf(<span style="color: #aa5500">&#39;/api/auctions/user&#39;</span>) === <span style="color: #009999">0</span>) {
+                $(<span style="color: #aa5500">&#39;#users-info&#39;</span>).html(<span style="color: #aa5500">&#39;&#39;</span>);
+                <span style="color: #0000aa">var</span> usersTemplate = Handlebars.compile($(<span style="color: #aa5500">&#39;#users-info-template&#39;</span>).html());
+                <span style="color: #00aaaa">Object</span>.keys(msg.data.user).forEach(<span style="color: #0000aa">function</span>(user) {
+                    $(<span style="color: #aa5500">&#39;#users-info&#39;</span>).append(usersTemplate(msg.data.user[user]));
+                });
+            }
+            <span style="color: #aaaaaa; font-style: italic">// List of auctions? Use HandleBars to populate #auction-items</span>
+            <span style="color: #0000aa">else</span> <span style="color: #0000aa">if</span> (msg.location &amp;&amp; msg.location.indexOf(<span style="color: #aa5500">&#39;/api/auctions/auction&#39;</span>) === <span style="color: #009999">0</span>) { 
+                $(<span style="color: #aa5500">&#39;#auction-items&#39;</span>).html(<span style="color: #aa5500">&#39;&#39;</span>);
+                <span style="color: #0000aa">var</span> auctionsTemplate = Handlebars.compile($(<span style="color: #aa5500">&#39;#auction-item-template&#39;</span>).html());
+                <span style="color: #00aaaa">Object</span>.keys(msg.data.auction).forEach(<span style="color: #0000aa">function</span>(item) {
+                    $(<span style="color: #aa5500">&#39;#auction-items&#39;</span>).append(auctionsTemplate(msg.data.auction[item]));
+                });
+            }
+
+            <span style="color: #0000aa">if</span> (msg.error) {
+                console.log(msg.error.name, <span style="color: #aa5500">&#39;: &#39;</span>, msg.error.message);
+            }
+        });
+
+        <span style="color: #aaaaaa; font-style: italic">// Got a response to a obapi.put() request</span>
+        obapi.on(<span style="color: #aa5500">&#39;Put&#39;</span>, <span style="color: #0000aa">function</span>(msg) {
+            console.log(msg);
+        });
+        
+        <span style="color: #aaaaaa; font-style: italic">// Got a response to a obapi.post() request</span>
+        obapi.on(<span style="color: #aa5500">&#39;Post&#39;</span>, <span style="color: #0000aa">function</span>(msg) {
+            console.log(msg);
+        });
+        
+        console.log( <span style="color: #aa5500">&quot;ready!&quot;</span> );
+    });
+</pre></td></tr></table></div>
+<p></p>
+<p></p>
 </div>
 
 </body>

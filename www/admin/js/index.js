@@ -31,18 +31,23 @@
         }
         */
 
-        //  Connection accepted
+        // Got a response to a obapi.get() request
+        //  Connection accepted - so send a buncha requests
         obapi.on('Connected', function(msg) {
             console.log('Connected to auction server');
             obapi.get('/api/auctions/auction');    // Get all auctions
             obapi.get('/api/auctions/user');       // Get all users
             obapi.get('/api/messages');            // Get all messages
-            obapi.get('/db/storage/should work');        // Get all general purpose collections
-            obapi.put('/db/storage/should work/again three', {FromWebPage3: {from:'web', to:'page4'}});        // Get all general purpose collections
+            
+            // Put some general purpose data into data storage on the server
+            obapi.put('/db/storage/myFrontEndStorage', {FromWebPage3: {somedata:'web', otherdata:'page4'}});        // Get all general purpose collections
+            obapi.get('/db/storage/myFrontEndStorage'); // Get all general purpose collections
         });
 
+        // I use the 'location' but could use 'resource' instead - (identical unless redirected)
+        //  However: 'location' is null if there was an error
         obapi.on('Get', function(msg) {
-            // List of users?  Populate #users-info
+            // List of users?  Use HandleBars to populate #users-info
             if (msg.location && msg.location.indexOf('/api/auctions/user') === 0) {
                 $('#users-info').html('');
                 var usersTemplate = Handlebars.compile($('#users-info-template').html());
@@ -50,7 +55,7 @@
                     $('#users-info').append(usersTemplate(msg.data.user[user]));
                 });
             }
-            // List of auctions? Populate #auction-items
+            // List of auctions? Use HandleBars to populate #auction-items
             else if (msg.location && msg.location.indexOf('/api/auctions/auction') === 0) { 
                 $('#auction-items').html('');
                 var auctionsTemplate = Handlebars.compile($('#auction-item-template').html());
@@ -64,10 +69,12 @@
             }
         });
 
+        // Got a response to a obapi.put() request
         obapi.on('Put', function(msg) {
             console.log(msg);
         });
         
+        // Got a response to a obapi.post() request
         obapi.on('Post', function(msg) {
             console.log(msg);
         });
